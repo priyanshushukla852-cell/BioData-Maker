@@ -39,7 +39,7 @@ interface BiodataService {
     @PUT("/api/biodatas/{id}")
     suspend fun updateBiodata(
         @Path("id") id: String,
-        @Body request: CreateBiodataRequest
+        @Body request: UpdateBiodataRequest
     ): BiodataResponse
 
     @DELETE("/api/biodatas/{id}")

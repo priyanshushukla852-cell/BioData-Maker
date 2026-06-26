@@ -13,7 +13,8 @@ object RetrofitClient {
 
     fun getRetrofit(context: Context): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            // HEADERS only: never log BODY to avoid exposing PII in logs (CLAUDE.md rule 2)
+            level = HttpLoggingInterceptor.Level.HEADERS
         }
 
         val okHttpClient = OkHttpClient.Builder()
