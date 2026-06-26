@@ -3,6 +3,7 @@ package com.biodataai.app.ui.viewmodel
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.biodataai.app.connectivity.AppConnectivityManager
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.db.entity.BiodataEntity
 import com.biodataai.app.repository.AuthRepository
@@ -20,7 +21,8 @@ data class HomeUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val userName: String? = null,
-    val biodatas: List<BiodataEntity> = emptyList()
+    val biodatas: List<BiodataEntity> = emptyList(),
+    val isOnline: Boolean = true
 )
 
 class HomeViewModel(
@@ -32,12 +34,14 @@ class HomeViewModel(
 
     private val authRepository = AuthRepository(context, firebaseAuth)
     private val biodataRepository = BiodataRepository(context, database)
+    private val connectivityManager = AppConnectivityManager(context)
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
         loadUserData()
+        observeConnectivity()
     }
 
     private fun loadUserData() {
@@ -61,6 +65,14 @@ class HomeViewModel(
                     biodatas = biodatas,
                     isLoading = false
                 )
+            }
+        }
+    }
+
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            connectivityManager.isOnline.collect { isOnline ->
+                _uiState.value = _uiState.value.copy(isOnline = isOnline)
             }
         }
     }

@@ -36,6 +36,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.navigation.NavRoute
+import com.biodataai.app.ui.component.OfflineStateBanner
 import com.biodataai.app.ui.viewmodel.HomeViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -64,6 +65,10 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            if (!uiState.isOnline) {
+                OfflineStateBanner()
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

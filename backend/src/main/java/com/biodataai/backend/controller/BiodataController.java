@@ -1,5 +1,6 @@
 package com.biodataai.backend.controller;
 
+import com.biodataai.backend.annotation.Idempotent;
 import com.biodataai.backend.config.FirebaseAuthFilter;
 import com.biodataai.backend.dto.BiodataCreateRequest;
 import com.biodataai.backend.dto.BiodataResponse;
@@ -32,6 +33,7 @@ public class BiodataController {
     }
 
     @PostMapping
+    @Idempotent
     public ResponseEntity<BiodataResponse> create(
             @RequestAttribute(FirebaseAuthFilter.USER_ID_ATTRIBUTE) UUID userId,
             @Valid @RequestBody BiodataCreateRequest request) {
