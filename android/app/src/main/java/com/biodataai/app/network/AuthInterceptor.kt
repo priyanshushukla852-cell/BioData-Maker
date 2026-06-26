@@ -1,9 +1,10 @@
 package com.biodataai.app.network
 
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.tasks.await
 import okhttp3.Interceptor
 import okhttp3.Response
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class AuthInterceptor(private val firebaseAuth: FirebaseAuth) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -33,10 +34,16 @@ class AuthInterceptor(private val firebaseAuth: FirebaseAuth) : Interceptor {
     }
 
     private fun blockingGetIdToken(user: com.google.firebase.auth.FirebaseUser): String {
+        val latch = CountDownLatch(1)
         val task = user.getIdToken(false)
-        while (!task.isComplete) {
-            Thread.sleep(10)
+
+        task.addOnCompleteListener { latch.countDown() }
+
+        // Wait for token with 5-second timeout
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+            throw Exception("Token fetch timeout")
         }
+
         if (task.isSuccessful) {
             return task.result?.token ?: throw Exception("No token in result")
         } else {

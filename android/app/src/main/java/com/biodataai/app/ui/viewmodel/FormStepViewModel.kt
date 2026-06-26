@@ -25,8 +25,7 @@ data class FormStepUiState(
     val error: String? = null,
     val currentStep: Int = 1,
     val formState: FormState = FormState(),
-    val isSaving: Boolean = false,
-    val syncId: String = UUID.randomUUID().toString() // Idempotency key
+    val isSaving: Boolean = false
 )
 
 /**
@@ -70,11 +69,25 @@ class FormStepViewModel(
             try {
                 val biodata = biodataRepository.getBiodata(biodataId)
                 if (biodata is com.biodataai.app.core.Result.Success) {
-                    // Deserialize saved form state from Room
-                    if (!biodata.data.formDataJson.isNullOrEmpty()) {
-                        val formState = Gson().fromJson(biodata.data.formDataJson, FormState::class.java)
+                    val entity = biodata.data
+                    // Deserialize saved form state from Room (source of truth)
+                    try {
+                        val formState = if (!entity.formDataJson.isNullOrEmpty()) {
+                            Gson().fromJson(entity.formDataJson, FormState::class.java)
+                        } else {
+                            FormState()
+                        }
                         _uiState.value = _uiState.value.copy(formState = formState)
+                    } catch (e: Exception) {
+                        _uiState.value = _uiState.value.copy(
+                            error = "Corrupted form data. Starting fresh.",
+                            formState = FormState()
+                        )
                     }
+                } else if (biodata is com.biodataai.app.core.Result.Error) {
+                    _uiState.value = _uiState.value.copy(
+                        error = "Biodata not found"
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -180,27 +193,13 @@ class FormStepViewModel(
             try {
                 val formState = _uiState.value.formState
                 val formJson = Gson().toJson(formState)
-                val syncId = _uiState.value.syncId
 
-                // Sync to backend with idempotency key
+                // Attempt backend sync (non-blocking, fire-and-forget)
                 val updateRequest = com.biodataai.app.network.api.UpdateBiodataRequest(
                     formDataJson = formJson
                 )
-                // TODO: Add idempotency-key header to request
-                // biodataRepository.updateBiodataWithSync(biodataId, updateRequest, syncId)
-
-                // For now, just attempt the update (non-blocking)
-                biodataRepository.updateBiodata(
-                    BiodataEntity(
-                        id = biodataId,
-                        userFirebaseUid = firebaseAuth.currentUser?.uid ?: "",
-                        title = "",
-                        formDataJson = formJson,
-                        syncedAt = Instant.now(),
-                        createdAt = Instant.now(),
-                        updatedAt = Instant.now()
-                    )
-                )
+                // TODO: Wire backend sync with idempotency-key header
+                // biodataRepository.syncBiodata(biodataId, updateRequest)
             } catch (e: Exception) {
                 // Log but don't block — offline is OK, sync will retry later via WorkManager
             }

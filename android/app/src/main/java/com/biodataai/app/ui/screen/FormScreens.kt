@@ -109,10 +109,10 @@ fun BiodataCreateScreen(navController: NavController, biodataId: String?) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Create Biodata") },
+                title = { Text(stringResource(R.string.create_biodata)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -126,7 +126,7 @@ fun BiodataCreateScreen(navController: NavController, biodataId: String?) {
                 .padding(16.dp)
         ) {
             Text(
-                "Select a template",
+                stringResource(R.string.select_template),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -727,7 +727,7 @@ fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
                             onClick = { navController.popBackStack() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Back")
+                            Text(stringResource(R.string.back))
                         }
 
                         Button(
@@ -770,7 +770,7 @@ fun TemplatePickerScreen(navController: NavController, biodataId: String) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Choose Template") })
+            TopAppBar(title = { Text(stringResource(R.string.choose_template)) })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -792,7 +792,7 @@ fun TemplatePickerScreen(navController: NavController, biodataId: String) {
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
             ) {
                 item {
-                    Text("Select a template for your biodata", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(R.string.select_template), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
 
                 items(uiState.templates.size) { index ->
@@ -833,7 +833,7 @@ fun TemplatePickerScreen(navController: NavController, biodataId: String) {
                             onClick = { navController.popBackStack() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Back")
+                            Text(stringResource(R.string.back))
                         }
 
                         Button(
@@ -847,7 +847,7 @@ fun TemplatePickerScreen(navController: NavController, biodataId: String) {
                             modifier = Modifier.weight(1f),
                             enabled = uiState.selectedTemplateId != null
                         ) {
-                            Text("Preview")
+                            Text(stringResource(R.string.preview))
                         }
                     }
                 }
@@ -924,7 +924,7 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
                             onClick = { navController.popBackStack() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Back")
+                            Text(stringResource(R.string.back))
                         }
 
                         Button(
@@ -935,7 +935,7 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Export PDF")
+                            Text(stringResource(R.string.export_pdf))
                         }
                     }
                 }
@@ -1053,7 +1053,7 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                             onClick = { navController.popBackStack() },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Back")
+                            Text(stringResource(R.string.back))
                         }
 
                         Button(
@@ -1063,7 +1063,7 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                             modifier = Modifier.weight(1f),
                             enabled = previewContent.isNotEmpty() && !uiState.isLoading && !uiState.isExportSuccessful
                         ) {
-                            Text("Export PDF")
+                            Text(stringResource(R.string.export_pdf))
                         }
                     }
                 }

@@ -9,8 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biodataai.app.R
 
 @Composable
 fun OfflineStateBanner(modifier: Modifier = Modifier) {
@@ -22,7 +24,7 @@ fun OfflineStateBanner(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            "Offline - Changes will sync when connection returns",
+            stringResource(R.string.offline_banner),
             color = Color.White,
             fontSize = 12.sp,
             modifier = Modifier.padding(8.dp)

@@ -30,15 +30,19 @@ class BiodataCreateViewModel(
     private val authRepository = AuthRepository(context, firebaseAuth)
     private val biodataRepository = BiodataRepository(context, database)
 
-    private val _uiState = MutableStateFlow(BiodataCreateUiState())
+    private val _uiState = MutableStateFlow(
+        savedStateHandle.get<BiodataCreateUiState>("uiState") ?: BiodataCreateUiState()
+    )
     val uiState: StateFlow<BiodataCreateUiState> = _uiState.asStateFlow()
 
     fun selectTemplate(templateId: String) {
         _uiState.value = _uiState.value.copy(selectedTemplate = templateId)
+        savedStateHandle["uiState"] = _uiState.value
     }
 
     fun selectLanguage(language: String) {
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
+        savedStateHandle["uiState"] = _uiState.value
     }
 
     fun createBiodata() {

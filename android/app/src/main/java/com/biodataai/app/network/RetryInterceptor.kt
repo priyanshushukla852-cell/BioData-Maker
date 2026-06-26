@@ -14,17 +14,17 @@ class RetryInterceptor(
         var lastException: IOException? = null
 
         for (attempt in 0 until maxRetries) {
-            return try {
-                chain.proceed(request)
+            try {
+                return chain.proceed(request)
             } catch (e: IOException) {
                 lastException = e
-                if (attempt < maxRetries - 1) {
-                    val delayMs = initialDelayMs * (1L shl attempt) // Exponential: 1s, 2s, 4s
-                    Thread.sleep(delayMs)
+                if (attempt < maxRetries - 1 && isRetryable(e)) {
+                    // Note: OkHttp interceptors run synchronously. Avoid blocking the thread.
+                    // Retry happens at the next attempt without sleep to avoid starving HTTP clients.
                     request = chain.request()
-                    continue
+                } else {
+                    throw e
                 }
-                throw e
             }
         }
 

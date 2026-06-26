@@ -13,4 +13,85 @@
     <string name="delete_button">Delete</string>
     <string name="cancel_button">Cancel</string>
     <string name="photos_count">%d / 5 photos uploaded</string>
+
+    <!-- Navigation & General -->
+    <string name="create_biodata">Create Biodata</string>
+    <string name="choose_template">Choose Template</string>
+    <string name="preview">Preview</string>
+    <string name="export_pdf">Export PDF</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="complete">Complete</string>
+
+    <!-- Form Steps -->
+    <string name="form_step">Step %d of 7</string>
+    <string name="progress">Progress</string>
+
+    <!-- Step 1: Personal Details -->
+    <string name="step1_title">Personal Details</string>
+    <string name="full_name">Full Name *</string>
+    <string name="date_of_birth">Date of Birth (YYYY-MM-DD) *</string>
+    <string name="gender">Gender *</string>
+    <string name="caste">Caste</string>
+    <string name="place_of_birth">Place of Birth</string>
+
+    <!-- Step 2: Family Details -->
+    <string name="step2_title">Family Details</string>
+    <string name="father_name">Father Name *</string>
+    <string name="mother_name">Mother Name *</string>
+    <string name="siblings_count">Number of Siblings</string>
+    <string name="family_status">Family Status</string>
+
+    <!-- Step 3: Education &amp; Career -->
+    <string name="step3_title">Education &amp; Career</string>
+    <string name="education_level">Education Level *</string>
+    <string name="occupation">Occupation *</string>
+    <string name="annual_income">Annual Income (Optional)</string>
+    <string name="company">Company</string>
+
+    <!-- Step 4: Lifestyle -->
+    <string name="step4_title">Lifestyle</string>
+    <string name="smoking">Smoking *</string>
+    <string name="drinking">Drinking *</string>
+    <string name="hobbies">Hobbies</string>
+
+    <!-- Step 5: Astrology -->
+    <string name="step5_title">Astrology (Optional)</string>
+    <string name="birth_time">Birth Time (HH:MM)</string>
+    <string name="birth_place_astro">Birth Place</string>
+    <string name="zodiac_sign">Zodiac Sign</string>
+    <string name="manglik_status">Manglik Status</string>
+
+    <!-- Step 6: Contact Info -->
+    <string name="step6_title">Contact Information</string>
+    <string name="phone">Phone Number *</string>
+    <string name="email">Email *</string>
+    <string name="city">City *</string>
+    <string name="address">Address</string>
+
+    <!-- Step 7 Already Defined -->
+
+    <!-- AI Summary -->
+    <string name="biodata_summary">Biodata Summary</string>
+    <string name="generating_summary">Generating summary...</string>
+    <string name="summary_description">AI-generated summary of your biodata</string>
+
+    <!-- Template Picker -->
+    <string name="select_template">Select a template for your biodata</string>
+
+    <!-- PDF Export -->
+    <string name="export_to_pdf">Export to PDF</string>
+    <string name="save_biodata_as_pdf">Save your biodata as a PDF document</string>
+    <string name="exporting">Exporting...</string>
+    <string name="pdf_exported">PDF exported successfully!</string>
+
+    <!-- Offline Banner -->
+    <string name="offline_banner">Offline - Changes will sync when connection returns</string>
+
+    <!-- Errors -->
+    <string name="required_field_empty">This field is required</string>
+    <string name="invalid_date_format">Invalid date format. Use YYYY-MM-DD</string>
+    <string name="invalid_email">Invalid email address</string>
+    <string name="max_photos_reached">Maximum 5 photos reached. Delete photos to add more.</string>
+    <string name="image_too_large">Image too large. Maximum 5MB after compression.</string>
 </resources>
