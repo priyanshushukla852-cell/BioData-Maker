@@ -77,4 +77,7 @@ interface BiodataDao {
 
     @Query("DELETE FROM biodata_photos WHERE id = :photoId")
     suspend fun deletePhoto(photoId: String)
+
+    @Query("SELECT * FROM biodatas WHERE userFirebaseUid = :userFirebaseUid AND deletedAt IS NULL AND (syncedAt IS NULL OR syncedAt < updatedAt)")
+    suspend fun getUnsyncedBiodatas(userFirebaseUid: String): List<BiodataEntity>
 }
