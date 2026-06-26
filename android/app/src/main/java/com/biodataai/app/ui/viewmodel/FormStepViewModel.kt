@@ -120,6 +120,13 @@ class FormStepViewModel(
         )
     }
 
+    fun updateStep7(step7: com.biodataai.app.ui.viewmodel.PhotosForm) {
+        require(step7.photoUrls.size <= 5) { "Maximum 5 photos allowed" }
+        _uiState.value = _uiState.value.copy(
+            formState = _uiState.value.formState.copy(step7 = step7)
+        )
+    }
+
     fun nextStep() {
         val currentStep = _uiState.value.currentStep
         if (currentStep < 7) {

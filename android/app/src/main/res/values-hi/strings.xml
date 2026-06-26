@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BioData AI</string>
+    <!-- Step 7: Photos -->
+    <string name="photos_title">फोटो</string>
+    <string name="photos_subtitle">अधिकतम 5 फोटो अपलोड करें। प्रत्येक फोटो अधिकतम 5MB तक संपीड़ित है।</string>
+    <string name="add_photo_button">फोटो जोड़ें</string>
+    <string name="error_label">त्रुटि</string>
+    <string name="photo_label">फोटो %d</string>
+    <string name="delete_photo_description">फोटो हटाएं</string>
+    <string name="delete_photo_dialog_title">फोटो हटाएं?</string>
+    <string name="delete_photo_dialog_message">यह फोटो हटा दी जाएगी।</string>
+    <string name="delete_button">हटाएं</string>
+    <string name="cancel_button">रद्द करें</string>
+    <string name="photos_count">%d / 5 फोटो अपलोड की गई</string>
+</resources>

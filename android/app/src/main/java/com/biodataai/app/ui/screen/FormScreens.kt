@@ -53,7 +53,21 @@ import com.biodataai.app.ui.viewmodel.FamilyDetailsForm
 import com.biodataai.app.ui.viewmodel.FormStepViewModel
 import com.biodataai.app.ui.viewmodel.LifestyleForm
 import com.biodataai.app.ui.viewmodel.PersonalDetailsForm
+import com.biodataai.app.ui.viewmodel.PhotosForm
 import com.google.firebase.auth.FirebaseAuth
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import com.biodataai.app.util.ImageCompressor
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.res.stringResource
+import com.biodataai.app.R
+import android.Manifest
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
+import java.io.File
 
 // Template options available to users
 private val AVAILABLE_TEMPLATES = listOf(
@@ -462,13 +476,158 @@ private fun FormStep6ContactInfo(viewModel: FormStepViewModel, uiState: com.biod
 
 @Composable
 private fun FormStep7Photos(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
-    Box(
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var isCompressing by remember { mutableStateOf(false) }
+    var compressionError by remember { mutableStateOf<String?>(null) }
+    var photoToDelete by remember { mutableStateOf<String?>(null) }
+
+    val photoLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            isCompressing = true
+            scope.launch {
+                try {
+                    val result = ImageCompressor.compressImage(context, uri)
+                    if (result.success && result.compressedUri != null) {
+                        val currentPhotos = uiState.formState.step7.photoUrls.toMutableList()
+                        currentPhotos.add(result.compressedUri.toString())
+                        viewModel.updateStep7(PhotosForm(currentPhotos))
+                        compressionError = null
+                    } else {
+                        compressionError = result.error ?: "Photo compression failed"
+                    }
+                } catch (e: Exception) {
+                    compressionError = "Unable to process photo. Please try again."
+                } finally {
+                    isCompressing = false
+                }
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            photoLauncher.launch("image/*")
+        } else {
+            compressionError = "Photo permission denied. Cannot access gallery."
+        }
+    }
+
+    LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp),
-        contentAlignment = Alignment.Center
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
     ) {
-        Text("Photo upload coming in next iteration", fontSize = 14.sp)
+        item {
+            Text(stringResource(R.string.photos_title), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(stringResource(R.string.photos_subtitle), fontSize = 12.sp)
+        }
+
+        item {
+            Button(
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                        photoLauncher.launch("image/*")
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isCompressing && uiState.formState.step7.photoUrls.size < 5
+            ) {
+                if (isCompressing) {
+                    CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                } else {
+                    Text(stringResource(R.string.add_photo_button))
+                }
+            }
+        }
+
+        if (compressionError != null) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(stringResource(R.string.error_label), fontWeight = FontWeight.Bold, color = androidx.compose.material3.MaterialTheme.colorScheme.error)
+                        Text(compressionError!!, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+
+        items(uiState.formState.step7.photoUrls.size) { index ->
+            val photoUri = uiState.formState.step7.photoUrls[index]
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.photo_label, index + 1), fontWeight = FontWeight.Bold)
+                        Text(photoUri.takeLast(30), fontSize = 12.sp, maxLines = 1)
+                    }
+                    IconButton(
+                        onClick = { photoToDelete = photoUri }
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.delete_photo_description), tint = androidx.compose.material3.MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
+
+        item {
+            Text(stringResource(R.string.photos_count, uiState.formState.step7.photoUrls.size), fontSize = 12.sp)
+        }
+    }
+
+    if (photoToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { photoToDelete = null },
+            title = { Text(stringResource(R.string.delete_photo_dialog_title)) },
+            text = { Text(stringResource(R.string.delete_photo_dialog_message)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        photoToDelete?.let { uri ->
+                            try {
+                                val file = File(android.net.Uri.parse(uri).path ?: return@let)
+                                if (file.exists()) file.delete()
+                            } catch (e: Exception) {
+                                // Ignore cleanup errors
+                            }
+                        }
+                        val updated = uiState.formState.step7.photoUrls.filter { it != photoToDelete }.toMutableList()
+                        viewModel.updateStep7(PhotosForm(updated))
+                        photoToDelete = null
+                    }
+                ) {
+                    Text(stringResource(R.string.delete_button))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { photoToDelete = null }
+                ) {
+                    Text(stringResource(R.string.cancel_button))
+                }
+            }
+        )
     }
 }
 

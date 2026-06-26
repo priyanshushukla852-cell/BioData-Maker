@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BioData AI</string>
+    <!-- Step 7: Photos -->
+    <string name="photos_title">Photos</string>
+    <string name="photos_subtitle">Upload up to 5 photos. Each photo is compressed to max 5MB.</string>
+    <string name="add_photo_button">Add Photo</string>
+    <string name="error_label">Error</string>
+    <string name="photo_label">Photo %d</string>
+    <string name="delete_photo_description">Delete photo</string>
+    <string name="delete_photo_dialog_title">Delete Photo?</string>
+    <string name="delete_photo_dialog_message">This photo will be removed.</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="photos_count">%d / 5 photos uploaded</string>
 </resources>
