@@ -13,17 +13,11 @@ abstract class BaseViewModel<T : Any>(
     protected val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    protected fun <R> launchAsync(
-        block: suspend () -> Result<R>,
-        onSuccess: (R) -> Unit = {},
-        onError: (Exception, String) -> Unit = { _, _ -> }
+    protected fun launchAsync(
+        block: suspend () -> Unit
     ) {
         viewModelScope.launch {
-            when (val result = block()) {
-                is Result.Success -> onSuccess(result.data)
-                is Result.Error -> onError(result.exception, result.message)
-                is Result.Loading -> {}
-            }
+            block()
         }
     }
 
