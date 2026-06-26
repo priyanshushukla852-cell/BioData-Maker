@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!--
+                Defense-in-depth only: regex-masks emails/phone numbers that end up in a log
+                message. The actual no-PII-in-logs guarantee (CLAUDE.md rule 2) comes from never
+                logging raw User/PersonalDetails/ContactInfo entities or their DTOs in the first
+                place — free-form fields like name/address/DOB can't be reliably caught by regex.
+            -->
+            <decorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <defaultMask>[REDACTED]</defaultMask>
+                <value>[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}</value>
+                <value>(\+?\d{1,3}[-\s]?)?\d{10}</value>
+            </decorator>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

@@ -1,0 +1,10 @@
+package com.biodataai.backend.repository;
+
+import com.biodataai.backend.entity.Lifestyle;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LifestyleRepository extends JpaRepository<Lifestyle, UUID> {
+    Optional<Lifestyle> findByBiodataId(UUID biodataId);
+}
