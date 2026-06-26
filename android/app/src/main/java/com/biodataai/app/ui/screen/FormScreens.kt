@@ -944,12 +944,143 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PdfExportScreen(navController: NavController, biodataId: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Export PDF")
+fun PdfExportScreen(navController: NavController, biodataId: String, templateId: String = "classic") {
+    val context = LocalContext.current
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val database = BioDataDatabase.getInstance(context)
+    val viewModel = remember {
+        com.biodataai.app.ui.viewmodel.PdfExportViewModel(context, biodataId, templateId, firebaseAuth, database)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Load preview content to export
+    var previewContent by remember { mutableStateOf("") }
+    val previewViewModel = remember {
+        com.biodataai.app.ui.viewmodel.BiodataPreviewViewModel(context, biodataId, templateId, "", firebaseAuth, database)
+    }
+    val previewUiState by previewViewModel.uiState.collectAsState()
+
+    LaunchedEffect(previewUiState.previewContent) {
+        previewContent = previewUiState.previewContent
+    }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
+    LaunchedEffect(uiState.isExportSuccessful) {
+        if (uiState.isExportSuccessful) {
+            snackbarHostState.showSnackbar("PDF exported successfully!")
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Export Biodata") })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        if (uiState.isLoading || previewUiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.height(48.dp))
+                    Spacer(Modifier.height(16.dp))
+                    Text(uiState.exportProgress)
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    Text("Export to PDF", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    Text("Save your biodata as a PDF document", fontSize = 12.sp)
+                }
+
+                item {
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Template: ${templateId.replaceFirstChar { it.uppercase() }}", fontWeight = FontWeight.Bold)
+                            Text("Format: A4 Portrait", fontSize = 12.sp)
+                            Text("File location: Documents folder", fontSize = 12.sp)
+                        }
+                    }
+                }
+
+                if (uiState.isExportSuccessful && uiState.pdfFilePath != null) {
+                    item {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("✓ PDF Exported", fontWeight = FontWeight.Bold, color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
+                                Text(uiState.pdfFilePath!!, fontSize = 11.sp)
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Back")
+                        }
+
+                        Button(
+                            onClick = {
+                                viewModel.exportPdf(previewContent)
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = previewContent.isNotEmpty() && !uiState.isLoading && !uiState.isExportSuccessful
+                        ) {
+                            Text("Export PDF")
+                        }
+                    }
+                }
+
+                item {
+                    if (uiState.isExportSuccessful) {
+                        Button(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                        ) {
+                            Text("Done")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
