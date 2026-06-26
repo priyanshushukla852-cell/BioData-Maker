@@ -138,7 +138,7 @@ fun HomeScreen(navController: NavController) {
                                     .padding(vertical = 8.dp)
                                     .clickable {
                                         navController.navigate(
-                                            NavRoute.BiodataPreview(biodata.id)
+                                            NavRoute.BiodataPreview(biodata.id, "classic")
                                         )
                                     }
                             ) {

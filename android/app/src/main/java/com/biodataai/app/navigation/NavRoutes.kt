@@ -32,10 +32,10 @@ sealed class NavRoute {
     data class TemplatePicker(val biodataId: String) : NavRoute()
 
     @Serializable
-    data class BiodataPreview(val biodataId: String) : NavRoute()
+    data class BiodataPreview(val biodataId: String, val templateId: String) : NavRoute()
 
     @Serializable
-    data class PdfExport(val biodataId: String) : NavRoute()
+    data class PdfExport(val biodataId: String, val templateId: String) : NavRoute()
 
     @Serializable
     data object Settings : NavRoute()

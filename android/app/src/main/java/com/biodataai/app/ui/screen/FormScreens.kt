@@ -748,23 +748,199 @@ fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TemplatePickerScreen(navController: NavController, biodataId: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Choose Template")
+    val context = LocalContext.current
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val database = BioDataDatabase.getInstance(context)
+    val viewModel = remember {
+        com.biodataai.app.ui.viewmodel.TemplatePickerViewModel(context, biodataId, firebaseAuth, database)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Choose Template") })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Text("Select a template for your biodata", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
+
+                items(uiState.templates.size) { index ->
+                    val template = uiState.templates[index]
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.selectTemplate(template.id) }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                template.name,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(template.description, fontSize = 12.sp)
+                            Spacer(Modifier.height(8.dp))
+                            if (uiState.selectedTemplateId == template.id) {
+                                Text("✓ Selected", fontSize = 12.sp, color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Back")
+                        }
+
+                        Button(
+                            onClick = {
+                                navController.navigate(
+                                    NavRoute.BiodataPreview(biodataId, uiState.selectedTemplateId ?: "classic")
+                                ) {
+                                    popUpTo(NavRoute.TemplatePicker(biodataId)) { inclusive = true }
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = uiState.selectedTemplateId != null
+                        ) {
+                            Text("Preview")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiodataPreviewScreen(navController: NavController, biodataId: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Preview Biodata")
+fun BiodataPreviewScreen(navController: NavController, biodataId: String, templateId: String = "classic", summary: String = "") {
+    val context = LocalContext.current
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val database = BioDataDatabase.getInstance(context)
+    val viewModel = remember {
+        com.biodataai.app.ui.viewmodel.BiodataPreviewViewModel(context, biodataId, templateId, summary, firebaseAuth, database)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(uiState.previewTitle) })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            uiState.previewContent,
+                            modifier = Modifier.padding(16.dp),
+                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Back")
+                        }
+
+                        Button(
+                            onClick = {
+                                navController.navigate(NavRoute.PdfExport(biodataId, templateId)) {
+                                    popUpTo(NavRoute.BiodataPreview(biodataId, templateId)) { inclusive = true }
+                                }
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Export PDF")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
