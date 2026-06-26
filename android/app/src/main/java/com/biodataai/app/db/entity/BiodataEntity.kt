@@ -32,6 +32,8 @@ data class BiodataEntity(
     val language: LanguagePref = LanguagePref.EN,
     val status: BiodataStatus = BiodataStatus.DRAFT,
     val templateId: String? = null,
+    val formDataJson: String? = null, // JSON serialization of FormState (offline draft cache)
+    val syncedAt: Instant? = null, // Last successful backend sync
     val createdAt: Instant,
     val updatedAt: Instant,
     val deletedAt: Instant? = null

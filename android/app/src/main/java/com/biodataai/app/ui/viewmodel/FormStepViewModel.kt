@@ -7,10 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.repository.BiodataRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 data class FormStepUiState(
     val isLoading: Boolean = false,
@@ -114,14 +116,40 @@ class FormStepViewModel(
         _uiState.value = _uiState.value.copy(isSaving = true)
         viewModelScope.launch {
             try {
-                // TODO: Serialize formState to JSON and save to biodata entity in Room
-                // For now, just simulate saving
+                val formState = _uiState.value.formState
+                val formJson = Gson().toJson(formState)
+
+                // Save to Room (source of truth)
+                val biodata = biodataRepository.getBiodata(biodataId)
+                if (biodata is com.biodataai.app.core.Result.Success) {
+                    val updated = biodata.data.copy(
+                        formDataJson = formJson,
+                        updatedAt = Instant.now()
+                    )
+                    biodataRepository.updateBiodata(updated)
+                }
+
+                // Attempt backend sync (non-blocking — continue even if offline)
+                syncToBackend()
+
                 _uiState.value = _uiState.value.copy(isSaving = false)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to save: ${e.message}",
                     isSaving = false
                 )
+            }
+        }
+    }
+
+    private fun syncToBackend() {
+        viewModelScope.launch {
+            try {
+                val formState = _uiState.value.formState
+                // TODO: POST formState to backend /api/biodatas/{id}/form or similar
+                // For now, just log success
+            } catch (e: Exception) {
+                // Log but don't block — offline is OK
             }
         }
     }

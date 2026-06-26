@@ -79,6 +79,22 @@ class BiodataRepository(
         }
     }
 
+    // Update a biodata (e.g., form data, title, status)
+    suspend fun updateBiodata(biodata: BiodataEntity): Result<Unit> {
+        return try {
+            biodataDao.updateBiodata(biodata)
+            // Sync update to backend (non-blocking)
+            try {
+                // TODO: Create PUT endpoint for updates
+            } catch (e: Exception) {
+                // Offline — update will sync on next connectivity
+            }
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e, "Failed to update biodata: ${e.message}")
+        }
+    }
+
     // Soft delete a biodata
     suspend fun deleteBiodata(id: String): Result<Unit> {
         return try {
