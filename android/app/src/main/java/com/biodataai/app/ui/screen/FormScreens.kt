@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -631,13 +632,119 @@ private fun FormStep7Photos(viewModel: FormStepViewModel, uiState: com.biodataai
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("AI Summary Review")
+    val context = LocalContext.current
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val database = BioDataDatabase.getInstance(context)
+    val viewModel = remember {
+        com.biodataai.app.ui.viewmodel.AiSummaryViewModel(context, biodataId, firebaseAuth, database)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.clearError()
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Biodata Summary") })
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.height(48.dp))
+                    Spacer(Modifier.height(16.dp))
+                    Text("Generating your biodata summary...")
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    if (uiState.isManualEntry) {
+                        Text("Write Your Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    } else {
+                        Text("AI-Generated Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        if (uiState.keywords.isNotEmpty()) {
+                            Text("Keywords: ${uiState.keywords.joinToString(", ")}", fontSize = 12.sp)
+                        }
+                    }
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = uiState.summary,
+                        onValueChange = { viewModel.updateSummary(it) },
+                        label = { Text("Summary") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        maxLines = 8
+                    )
+                }
+
+                if (!uiState.isManualEntry && uiState.summary.isNotEmpty()) {
+                    item {
+                        OutlinedButton(
+                            onClick = { viewModel.skipAiAndWriteManually() },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Write Your Own Summary Instead")
+                        }
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Back")
+                        }
+
+                        Button(
+                            onClick = {
+                                navController.navigate(NavRoute.TemplatePicker(biodataId)) {
+                                    popUpTo(NavRoute.AiSummaryReview(biodataId)) { inclusive = true }
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            enabled = uiState.summary.isNotEmpty()
+                        ) {
+                            Text("Next")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

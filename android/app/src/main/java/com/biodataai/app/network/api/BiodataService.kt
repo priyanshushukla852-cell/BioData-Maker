@@ -44,4 +44,7 @@ interface BiodataService {
 
     @DELETE("/api/biodatas/{id}")
     suspend fun deleteBiodata(@Path("id") id: String)
+
+    @POST("/api/ai/summary")
+    suspend fun generateAiSummary(@Body request: AiSummaryRequest): AiSummaryResponse
 }
