@@ -101,6 +101,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
 
+    // Google Mobile Ads (AdMob for interstitial ads at PDF export)
+    implementation("com.google.android.gms:play-services-ads:23.2.0")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
