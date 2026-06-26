@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 8 \"https://repo1.maven.org/*)",
+      "Bash(curl -s -m 8 \"https://dl.google.com/*)"
+    ]
+  }
+}
