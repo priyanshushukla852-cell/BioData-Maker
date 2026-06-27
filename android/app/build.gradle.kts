@@ -60,6 +60,13 @@ android {
         compose = true
     }
 
+    lint {
+        // Baseline records the existing lint debt (notably ViewModelConstructorInComposable —
+        // the app constructs ViewModels in composables without DI factories) so CI fails only on
+        // NEW regressions. Addressing the baselined issues is tracked as separate refactor work.
+        baseline = file("lint-baseline.xml")
+    }
+
     packaging {
         resources.excludes.add("/META-INF/{AL2.0,LGPL2.1}")
     }

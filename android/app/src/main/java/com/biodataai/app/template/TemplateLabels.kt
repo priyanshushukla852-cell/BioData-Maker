@@ -31,7 +31,7 @@ class TemplateLabels private constructor(
 ) {
     companion object {
         fun forLanguage(context: Context, language: LanguagePref): TemplateLabels {
-            val locale = if (language == LanguagePref.HI) Locale("hi") else Locale.ENGLISH
+            val locale = if (language == LanguagePref.HI) Locale.forLanguageTag("hi") else Locale.ENGLISH
             val config = Configuration(context.resources.configuration).apply { setLocale(locale) }
             val res = context.createConfigurationContext(config).resources
             return TemplateLabels(
