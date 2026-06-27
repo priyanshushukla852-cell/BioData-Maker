@@ -2,6 +2,7 @@ package com.biodataai.app.db.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.Instant
 
@@ -22,7 +23,8 @@ enum class LanguagePref {
             childColumns = ["userFirebaseUid"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("userFirebaseUid")]
 )
 data class BiodataEntity(
     @PrimaryKey
@@ -183,7 +185,8 @@ data class ContactInfoEntity(
             childColumns = ["biodataId"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("biodataId")]
 )
 data class BiodataPhotoEntity(
     @PrimaryKey
