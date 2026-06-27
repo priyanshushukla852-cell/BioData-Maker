@@ -32,7 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.navigation.NavRoute
@@ -43,11 +46,14 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
+    val appContext = context.applicationContext
     val firebaseAuth = FirebaseAuth.getInstance()
     val database = BioDataDatabase.getInstance(context)
-    val viewModel = remember {
-        HomeViewModel(context, firebaseAuth, database, SavedStateHandle())
-    }
+    val viewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { HomeViewModel(appContext, firebaseAuth, database, createSavedStateHandle()) }
+        }
+    )
 
     val uiState by viewModel.uiState.collectAsState()
 

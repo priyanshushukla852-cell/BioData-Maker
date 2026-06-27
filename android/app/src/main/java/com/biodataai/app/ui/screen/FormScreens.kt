@@ -42,7 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.navigation.NavRoute
@@ -81,11 +84,14 @@ private val AVAILABLE_TEMPLATES = listOf(
 @Composable
 fun BiodataCreateScreen(navController: NavController, biodataId: String?) {
     val context = LocalContext.current
+    val appContext = context.applicationContext
     val firebaseAuth = FirebaseAuth.getInstance()
     val database = BioDataDatabase.getInstance(context)
-    val viewModel = remember {
-        BiodataCreateViewModel(context, firebaseAuth, database, SavedStateHandle())
-    }
+    val viewModel: BiodataCreateViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { BiodataCreateViewModel(appContext, firebaseAuth, database, createSavedStateHandle()) }
+        }
+    )
 
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -212,11 +218,14 @@ fun BiodataCreateScreen(navController: NavController, biodataId: String?) {
 @Composable
 fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
     val context = LocalContext.current
+    val appContext = context.applicationContext
     val firebaseAuth = FirebaseAuth.getInstance()
     val database = BioDataDatabase.getInstance(context)
-    val viewModel = remember {
-        FormStepViewModel(context, biodataId, firebaseAuth, database, SavedStateHandle())
-    }
+    val viewModel: FormStepViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { FormStepViewModel(appContext, biodataId, firebaseAuth, database, createSavedStateHandle()) }
+        }
+    )
 
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }

@@ -26,7 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.biodataai.app.navigation.NavRoute
 import com.biodataai.app.ui.viewmodel.LoginViewModel
@@ -36,9 +39,14 @@ import com.google.firebase.auth.FirebaseAuth
 fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
     val firebaseAuth = FirebaseAuth.getInstance()
-    val viewModel = remember {
-        LoginViewModel(context, firebaseAuth, SavedStateHandle())
-    }
+    // Scoped to the nav entry via a factory; uses applicationContext to avoid leaking the Activity
+    // across config changes, and createSavedStateHandle() instead of the test-only constructor.
+    val appContext = context.applicationContext
+    val viewModel: LoginViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer { LoginViewModel(appContext, firebaseAuth, createSavedStateHandle()) }
+        }
+    )
 
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }

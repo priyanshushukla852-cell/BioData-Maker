@@ -145,72 +145,6 @@
     </issue>
 
     <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        BiodataCreateViewModel(context, firebaseAuth, database, SavedStateHandle())"
-        errorLine2="                                                                ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/FormScreens.kt"
-            line="87"
-            column="65"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        FormStepViewModel(context, biodataId, firebaseAuth, database, SavedStateHandle())"
-        errorLine2="                                                                      ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/FormScreens.kt"
-            line="218"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        HomeViewModel(context, firebaseAuth, database, SavedStateHandle())"
-        errorLine2="                                                       ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/HomeScreen.kt"
-            line="49"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        LoginViewModel(context, firebaseAuth, SavedStateHandle())"
-        errorLine2="                                              ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/LoginScreen.kt"
-            line="40"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="    val viewModel = SplashViewModel(firebaseAuth, SavedStateHandle())"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/SplashScreen.kt"
-            line="20"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="ViewModelConstructorInComposable"
-        message="Constructing a view model in a composable"
-        errorLine1="    val viewModel = SplashViewModel(firebaseAuth, SavedStateHandle())"
-        errorLine2="                    ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/biodataai/app/ui/screen/SplashScreen.kt"
-            line="20"
-            column="21"/>
-    </issue>
-
-    <issue
         id="PermissionImpliesUnsupportedChromeOsHardware"
         message="Permission exists without corresponding hardware `&lt;uses-feature android:name=&quot;android.hardware.camera&quot; android:required=&quot;false&quot; />` tag"
         errorLine1="    &lt;uses-permission android:name=&quot;android.permission.CAMERA&quot; />"
@@ -818,7 +752,7 @@
         errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/biodataai/app/ui/screen/FormScreens.kt"
-            line="610"
+            line="619"
             column="49"/>
     </issue>
 
