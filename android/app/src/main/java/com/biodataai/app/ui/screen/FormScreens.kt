@@ -878,7 +878,7 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(uiState.previewTitle) })
+            TopAppBar(title = { Text(uiState.title) })
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -903,12 +903,7 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
                     Card(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            uiState.previewContent,
-                            modifier = Modifier.padding(16.dp),
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                            fontSize = 12.sp
-                        )
+                        com.biodataai.app.ui.component.BiodataDocumentView(blocks = uiState.blocks)
                     }
                 }
 
@@ -957,17 +952,6 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Load preview content to export
-    var previewContent by remember { mutableStateOf("") }
-    val previewViewModel = remember {
-        com.biodataai.app.ui.viewmodel.BiodataPreviewViewModel(context, biodataId, templateId, "", firebaseAuth, database)
-    }
-    val previewUiState by previewViewModel.uiState.collectAsState()
-
-    LaunchedEffect(previewUiState.previewContent) {
-        previewContent = previewUiState.previewContent
-    }
-
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
             snackbarHostState.showSnackbar(it)
@@ -987,7 +971,7 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-        if (uiState.isLoading || previewUiState.isLoading) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -1057,11 +1041,9 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                         }
 
                         Button(
-                            onClick = {
-                                viewModel.exportPdf(previewContent)
-                            },
+                            onClick = { viewModel.exportPdf() },
                             modifier = Modifier.weight(1f),
-                            enabled = previewContent.isNotEmpty() && !uiState.isLoading && !uiState.isExportSuccessful
+                            enabled = !uiState.isLoading && !uiState.isExportSuccessful
                         ) {
                             Text(stringResource(R.string.export_pdf))
                         }

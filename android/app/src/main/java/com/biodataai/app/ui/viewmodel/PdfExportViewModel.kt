@@ -4,13 +4,17 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biodataai.app.db.BioDataDatabase
-import com.biodataai.app.util.PdfExporter
+import com.biodataai.app.template.PdfLayoutEngine
+import com.biodataai.app.template.TemplateLabels
+import com.biodataai.app.template.TemplateRenderer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 data class PdfExportUiState(
     val isLoading: Boolean = false,
@@ -33,48 +37,40 @@ class PdfExportViewModel(
 
     private val applicationContext = context.applicationContext
 
-    fun exportPdf(previewContent: String) {
+    /**
+     * Renders the biodata to a PDF using the shared [TemplateRenderer] + [PdfLayoutEngine] (the same
+     * blocks the preview shows). [summary] is the AI/manual "About" text; pass "" if none.
+     */
+    fun exportPdf(summary: String = "") {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null, exportProgress = "Generating PDF...")
         viewModelScope.launch {
             try {
                 val biodata = database.biodataDao().getBiodataById(biodataId)
                 if (biodata == null) {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = "Biodata not found"
-                    )
+                    _uiState.value = _uiState.value.copy(isLoading = false, error = "Biodata not found")
                     return@launch
                 }
 
-                // Deserialize form data to get biodata name
-                val formDataJson = biodata.formDataJson ?: "{}"
-                val formState = Gson().fromJson(formDataJson, FormState::class.java)
-                val biodataName = formState.step1.fullName.ifEmpty { "Biodata" }
+                val formState = Gson().fromJson(biodata.formDataJson ?: "{}", FormState::class.java)
+                    ?: FormState()
+                val biodataName = formState.step1.fullName.ifBlank { "Biodata" }
+                val labels = TemplateLabels.forLanguage(applicationContext, biodata.language)
+                val document = TemplateRenderer.buildDocument(templateId, formState, labels, summary)
 
                 _uiState.value = _uiState.value.copy(exportProgress = "Creating PDF document...")
 
-                // Export PDF
-                val result = PdfExporter.exportToPdf(
-                    applicationContext,
-                    biodataName,
-                    previewContent,
-                    templateId
-                )
-
-                if (result.success && result.filePath != null) {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        isExportSuccessful = true,
-                        pdfFilePath = result.filePath,
-                        exportProgress = "PDF exported successfully"
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = result.error ?: "Unknown error during PDF export",
-                        exportProgress = "Export failed"
-                    )
+                // PdfDocument rendering does file I/O — keep it off the main thread.
+                val file = withContext(Dispatchers.IO) {
+                    PdfLayoutEngine(applicationContext)
+                        .render(document, "Biodata_${biodataName.replace(" ", "_")}")
                 }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isExportSuccessful = true,
+                    pdfFilePath = file.absolutePath,
+                    exportProgress = "PDF exported successfully"
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

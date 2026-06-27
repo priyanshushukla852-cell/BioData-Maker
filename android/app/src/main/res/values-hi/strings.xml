@@ -13,4 +13,19 @@
     <string name="delete_button">हटाएं</string>
     <string name="cancel_button">रद्द करें</string>
     <string name="photos_count">%d / 5 फोटो अपलोड की गई</string>
+
+    <!-- Biodata document (rendered template labels — resolved per biodata language) -->
+    <string name="doc_title">विवाह बायोडाटा</string>
+    <string name="doc_section_personal">व्यक्तिगत विवरण</string>
+    <string name="doc_label_name">नाम</string>
+    <string name="doc_label_dob">जन्म तिथि</string>
+    <string name="doc_label_gender">लिंग</string>
+    <string name="doc_label_religion">धर्म</string>
+    <string name="doc_label_height">ऊँचाई</string>
+    <string name="doc_unit_cm">से.मी.</string>
+    <string name="doc_section_contact">संपर्क जानकारी</string>
+    <string name="doc_label_phone">फ़ोन</string>
+    <string name="doc_label_email">ईमेल</string>
+    <string name="doc_label_address">पता</string>
+    <string name="doc_section_about">परिचय</string>
 </resources>

@@ -88,6 +88,21 @@
     <!-- Offline Banner -->
     <string name="offline_banner">Offline - Changes will sync when connection returns</string>
 
+    <!-- Biodata document (rendered template labels — resolved per biodata language) -->
+    <string name="doc_title">Marriage Biodata</string>
+    <string name="doc_section_personal">Personal Details</string>
+    <string name="doc_label_name">Name</string>
+    <string name="doc_label_dob">Date of Birth</string>
+    <string name="doc_label_gender">Gender</string>
+    <string name="doc_label_religion">Religion</string>
+    <string name="doc_label_height">Height</string>
+    <string name="doc_unit_cm">cm</string>
+    <string name="doc_section_contact">Contact Information</string>
+    <string name="doc_label_phone">Phone</string>
+    <string name="doc_label_email">Email</string>
+    <string name="doc_label_address">Address</string>
+    <string name="doc_section_about">About</string>
+
     <!-- Errors -->
     <string name="required_field_empty">This field is required</string>
     <string name="invalid_date_format">Invalid date format. Use YYYY-MM-DD</string>
