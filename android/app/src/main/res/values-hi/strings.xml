@@ -14,6 +14,78 @@
     <string name="cancel_button">रद्द करें</string>
     <string name="photos_count">%d / 5 फोटो अपलोड की गई</string>
 
+    <!-- Navigation & General -->
+    <string name="create_biodata">बायोडाटा बनाएं</string>
+    <string name="choose_template">टेम्पलेट चुनें</string>
+    <string name="preview">पूर्वावलोकन</string>
+    <string name="export_pdf">PDF निर्यात करें</string>
+    <string name="back">वापस</string>
+    <string name="next">आगे</string>
+    <string name="complete">पूर्ण करें</string>
+
+    <!-- Form Steps -->
+    <string name="form_step">चरण %d / 7</string>
+    <string name="progress">प्रगति</string>
+
+    <!-- Step 1: Personal Details -->
+    <string name="step1_title">व्यक्तिगत विवरण</string>
+    <string name="full_name">पूरा नाम *</string>
+    <string name="date_of_birth">जन्म तिथि (YYYY-MM-DD) *</string>
+    <string name="gender">लिंग *</string>
+    <string name="caste">जाति</string>
+    <string name="place_of_birth">जन्म स्थान</string>
+
+    <!-- Step 2: Family Details -->
+    <string name="step2_title">पारिवारिक विवरण</string>
+    <string name="father_name">पिता का नाम *</string>
+    <string name="mother_name">माता का नाम *</string>
+    <string name="siblings_count">भाई-बहनों की संख्या</string>
+    <string name="family_status">पारिवारिक स्थिति</string>
+
+    <!-- Step 3: Education & Career -->
+    <string name="step3_title">शिक्षा और करियर</string>
+    <string name="education_level">शिक्षा स्तर *</string>
+    <string name="occupation">व्यवसाय *</string>
+    <string name="annual_income">वार्षिक आय (वैकल्पिक)</string>
+    <string name="company">कंपनी</string>
+
+    <!-- Step 4: Lifestyle -->
+    <string name="step4_title">जीवनशैली</string>
+    <string name="smoking">धूम्रपान *</string>
+    <string name="drinking">मद्यपान *</string>
+    <string name="hobbies">शौक</string>
+
+    <!-- Step 5: Astrology -->
+    <string name="step5_title">ज्योतिष (वैकल्पिक)</string>
+    <string name="birth_time">जन्म समय (HH:MM)</string>
+    <string name="birth_place_astro">जन्म स्थान</string>
+    <string name="zodiac_sign">राशि</string>
+    <string name="manglik_status">मांगलिक स्थिति</string>
+
+    <!-- Step 6: Contact Info -->
+    <string name="step6_title">संपर्क जानकारी</string>
+    <string name="phone">फ़ोन नंबर *</string>
+    <string name="email">ईमेल *</string>
+    <string name="city">शहर *</string>
+    <string name="address">पता</string>
+
+    <!-- AI Summary -->
+    <string name="biodata_summary">बायोडाटा सारांश</string>
+    <string name="generating_summary">सारांश तैयार किया जा रहा है...</string>
+    <string name="summary_description">आपके बायोडाटा का AI-जनित सारांश</string>
+
+    <!-- Template Picker -->
+    <string name="select_template">अपने बायोडाटा के लिए एक टेम्पलेट चुनें</string>
+
+    <!-- PDF Export -->
+    <string name="export_to_pdf">PDF में निर्यात करें</string>
+    <string name="save_biodata_as_pdf">अपने बायोडाटा को PDF दस्तावेज़ के रूप में सहेजें</string>
+    <string name="exporting">निर्यात किया जा रहा है...</string>
+    <string name="pdf_exported">PDF सफलतापूर्वक निर्यात किया गया!</string>
+
+    <!-- Offline Banner -->
+    <string name="offline_banner">ऑफ़लाइन - कनेक्शन वापस आने पर परिवर्तन सिंक होंगे</string>
+
     <!-- Biodata document (rendered template labels — resolved per biodata language) -->
     <string name="doc_title">विवाह बायोडाटा</string>
     <string name="doc_section_personal">व्यक्तिगत विवरण</string>
@@ -34,4 +106,11 @@
     <string name="doc_label_education">शिक्षा</string>
     <string name="doc_label_company">कंपनी</string>
     <string name="doc_label_age">आयु</string>
+
+    <!-- Errors -->
+    <string name="required_field_empty">यह फ़ील्ड आवश्यक है</string>
+    <string name="invalid_date_format">अमान्य तिथि प्रारूप। YYYY-MM-DD का उपयोग करें</string>
+    <string name="invalid_email">अमान्य ईमेल पता</string>
+    <string name="max_photos_reached">अधिकतम 5 फोटो पहुँच गई। और जोड़ने के लिए फोटो हटाएं।</string>
+    <string name="image_too_large">छवि बहुत बड़ी है। संपीड़न के बाद अधिकतम 5MB।</string>
 </resources>

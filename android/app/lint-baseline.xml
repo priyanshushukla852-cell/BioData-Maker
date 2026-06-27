@@ -52,7 +52,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/biodataai/app/template/TemplateLabels.kt"
-            line="35"
+            line="40"
             column="81"/>
     </issue>
 
@@ -208,589 +208,6 @@
             file="src/main/java/com/biodataai/app/ui/screen/SplashScreen.kt"
             line="20"
             column="21"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;create_biodata&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;create_biodata&quot;>Create Biodata&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="18"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;choose_template&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;choose_template&quot;>Choose Template&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="19"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;preview&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;preview&quot;>Preview&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="20"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;export_pdf&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;export_pdf&quot;>Export PDF&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="21"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;back&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;back&quot;>Back&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="22"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;next&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;next&quot;>Next&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="23"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;complete&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;complete&quot;>Complete&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="24"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;form_step&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;form_step&quot;>Step %d of 7&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="27"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;progress&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;progress&quot;>Progress&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="28"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step1_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step1_title&quot;>Personal Details&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="31"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;full_name&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;full_name&quot;>Full Name *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="32"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;date_of_birth&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;date_of_birth&quot;>Date of Birth (YYYY-MM-DD) *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="33"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;gender&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;gender&quot;>Gender *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="34"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;caste&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;caste&quot;>Caste&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="35"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;place_of_birth&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;place_of_birth&quot;>Place of Birth&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="36"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step2_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step2_title&quot;>Family Details&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="39"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;father_name&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;father_name&quot;>Father Name *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="40"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;mother_name&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;mother_name&quot;>Mother Name *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="41"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;siblings_count&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;siblings_count&quot;>Number of Siblings&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="42"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;family_status&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;family_status&quot;>Family Status&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="43"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step3_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step3_title&quot;>Education &amp;amp; Career&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="46"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;education_level&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;education_level&quot;>Education Level *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="47"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;occupation&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;occupation&quot;>Occupation *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="48"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;annual_income&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;annual_income&quot;>Annual Income (Optional)&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="49"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;company&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;company&quot;>Company&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="50"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step4_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step4_title&quot;>Lifestyle&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="53"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;smoking&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;smoking&quot;>Smoking *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="54"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;drinking&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;drinking&quot;>Drinking *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="55"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;hobbies&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;hobbies&quot;>Hobbies&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="56"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step5_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step5_title&quot;>Astrology (Optional)&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="59"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;birth_time&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;birth_time&quot;>Birth Time (HH:MM)&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="60"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;birth_place_astro&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;birth_place_astro&quot;>Birth Place&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="61"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;zodiac_sign&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;zodiac_sign&quot;>Zodiac Sign&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="62"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;manglik_status&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;manglik_status&quot;>Manglik Status&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="63"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;step6_title&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;step6_title&quot;>Contact Information&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="66"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;phone&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;phone&quot;>Phone Number *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="67"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;email&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;email&quot;>Email *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="68"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;city&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;city&quot;>City *&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="69"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;address&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;address&quot;>Address&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="70"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;biodata_summary&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;biodata_summary&quot;>Biodata Summary&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="75"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;generating_summary&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;generating_summary&quot;>Generating summary...&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="76"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;summary_description&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;summary_description&quot;>AI-generated summary of your biodata&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="77"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;select_template&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;select_template&quot;>Select a template for your biodata&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="80"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;export_to_pdf&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;export_to_pdf&quot;>Export to PDF&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="83"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;save_biodata_as_pdf&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;save_biodata_as_pdf&quot;>Save your biodata as a PDF document&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="84"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;exporting&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;exporting&quot;>Exporting...&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="85"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;pdf_exported&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;pdf_exported&quot;>PDF exported successfully!&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="86"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;offline_banner&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;offline_banner&quot;>Offline - Changes will sync when connection returns&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="89"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;required_field_empty&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;required_field_empty&quot;>This field is required&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="107"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;invalid_date_format&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;invalid_date_format&quot;>Invalid date format. Use YYYY-MM-DD&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="108"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;invalid_email&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;invalid_email&quot;>Invalid email address&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="109"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;max_photos_reached&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;max_photos_reached&quot;>Maximum 5 photos reached. Delete photos to add more.&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="110"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="MissingTranslation"
-        message="&quot;image_too_large&quot; is not translated in &quot;hi&quot; (Hindi)"
-        errorLine1="    &lt;string name=&quot;image_too_large&quot;>Image too large. Maximum 5MB after compression.&lt;/string>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="111"
-            column="13"/>
     </issue>
 
     <issue
@@ -1280,7 +697,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="107"
+            line="113"
             column="13"/>
     </issue>
 
@@ -1291,7 +708,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="108"
+            line="114"
             column="13"/>
     </issue>
 
@@ -1302,7 +719,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="109"
+            line="115"
             column="13"/>
     </issue>
 
@@ -1313,7 +730,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="110"
+            line="116"
             column="13"/>
     </issue>
 
@@ -1324,7 +741,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="111"
+            line="117"
             column="13"/>
     </issue>
 
@@ -1342,12 +759,34 @@
     <issue
         id="TypographyEllipsis"
         message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;generating_summary&quot;>सारांश तैयार किया जा रहा है...&lt;/string>"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-hi/strings.xml"
+            line="74"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
         errorLine1="    &lt;string name=&quot;generating_summary&quot;>Generating summary...&lt;/string>"
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
             line="76"
             column="39"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;exporting&quot;>निर्यात किया जा रहा है...&lt;/string>"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-hi/strings.xml"
+            line="83"
+            column="30"/>
     </issue>
 
     <issue
