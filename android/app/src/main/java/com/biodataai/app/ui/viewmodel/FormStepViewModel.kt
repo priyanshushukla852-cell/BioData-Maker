@@ -59,9 +59,9 @@ class FormStepViewModel(
     }
 
     override fun onCleared() {
-        // Save state to SavedStateHandle (survives process death)
+        // Save state to SavedStateHandle (survives process death).
+        // No super.onCleared() call: ViewModel's implementation is empty (lint: EmptySuperCall).
         savedStateHandle["formUiState"] = _uiState.value
-        super.onCleared()
     }
 
     private fun loadExistingBiodata() {
