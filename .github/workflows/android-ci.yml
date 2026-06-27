@@ -54,7 +54,11 @@ jobs:
 
   release-build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Skipped until you're ready to publish: set repository variable ENABLE_PLAY_RELEASE=true
+    # AND add the signing/Play secrets (SIGNING_KEYSTORE_BASE64, SIGNING_KEY_ALIAS,
+    # SIGNING_KEY_PASSWORD, SIGNING_STORE_PASSWORD, PLAY_CONSOLE_SERVICE_ACCOUNT).
+    # Until then this job is skipped (not failed), keeping main green.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_PLAY_RELEASE == 'true'
     defaults:
       run:
         working-directory: android
