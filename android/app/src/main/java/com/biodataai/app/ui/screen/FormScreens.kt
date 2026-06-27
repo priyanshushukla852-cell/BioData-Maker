@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -112,7 +112,7 @@ fun BiodataCreateScreen(navController: NavController, biodataId: String?) {
                 title = { Text(stringResource(R.string.create_biodata)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -234,7 +234,7 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                 title = { Text("Step $step of 7") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -247,7 +247,7 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                 .padding(paddingValues)
         ) {
             LinearProgressIndicator(
-                progress = step.toFloat() / 7f,
+                progress = { step.toFloat() / 7f },
                 modifier = Modifier.fillMaxWidth()
             )
 

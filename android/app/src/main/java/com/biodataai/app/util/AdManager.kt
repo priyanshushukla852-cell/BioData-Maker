@@ -19,7 +19,8 @@ object AdManager {
 
     /**
      * Load interstitial ad for PDF export (called after successful export)
-     * Note: In production, replace with actual Google AdMob Unit ID
+     * Uses Google's test Ad Unit ID for development/testing.
+     * For production, replace with your actual AdMob Unit ID from Google AdMob console.
      */
     fun loadInterstitialAd(
         context: Context,
@@ -28,9 +29,9 @@ object AdManager {
     ) {
         val adRequest = AdRequest.Builder().build()
 
-        // Test Ad Unit ID for development/testing
-        // Replace with real Ad Unit ID from Google AdMob console in production
-        val adUnitId = "ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx"
+        // Google's test Interstitial Ad Unit ID (safe for development/testing)
+        // Production: replace with real Ad Unit ID from https://admob.google.com
+        val adUnitId = "ca-app-pub-3940256099942544/1033173712"
 
         InterstitialAd.load(
             context,
