@@ -40,10 +40,12 @@ jobs:
 
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 30
         with:
           api-level: 26
           target: default
           arch: x86_64
+          enable-kvm: true
           working-directory: android
           script: ./gradlew connectedAndroidTest
 
@@ -65,17 +67,24 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Decode and write keystore
+        run: |
+          echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > biodata-release.keystore
+          chmod 600 biodata-release.keystore
+        shell: bash
+
       - name: Build release APK
         run: ./gradlew assembleRelease
         env:
+          SIGNING_STORE_FILE: ${{ github.workspace }}/android/biodata-release.keystore
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
       - name: Upload to Play Console internal testing track
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@v1.14.0
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_CONSOLE_SERVICE_ACCOUNT }}
           packageName: com.biodataai.app
-          releaseFiles: android/app/build/outputs/apk/release/app-release.apk
+          releaseFiles: app/build/outputs/apk/release/app-release.apk
           track: internal

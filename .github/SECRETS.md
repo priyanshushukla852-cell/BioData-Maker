@@ -16,6 +16,7 @@ Set these secrets in your GitHub repository settings:
 
 | Secret | Description |
 |--------|-------------|
+| `SIGNING_KEYSTORE_BASE64` | Android keystore file, base64-encoded (see setup instructions below) |
 | `SIGNING_KEY_ALIAS` | Android keystore alias for signing release APKs |
 | `SIGNING_KEY_PASSWORD` | Password for the signing key in the keystore |
 | `SIGNING_STORE_PASSWORD` | Master password for the keystore file |
@@ -28,11 +29,25 @@ Set these secrets in your GitHub repository settings:
 3. Click **New repository secret**
 4. Add each secret by name and value
 
-#### Android Signing Key
+#### Android Signing Key & Keystore
 Generate a keystore if you don't have one:
 ```bash
 keytool -genkey -v -keystore biodata-release.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias biodata-key
 ```
+
+Then, encode the keystore file as Base64 for the `SIGNING_KEYSTORE_BASE64` secret:
+```bash
+# macOS/Linux:
+cat biodata-release.keystore | base64 -w0 | pbcopy
+
+# Windows (PowerShell):
+$content = [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("biodata-release.keystore"))
+$content | Set-Clipboard
+```
+
+Paste the output as the `SIGNING_KEYSTORE_BASE64` secret value.
+
+**Note:** The keystore file is only used during CI/CD — it's never checked into the repository or stored as plain text in secrets.
 
 #### Play Console Service Account
 1. Open [Google Play Console](https://play.google.com/console)
