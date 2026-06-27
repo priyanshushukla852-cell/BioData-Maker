@@ -19,7 +19,7 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.biodataai.app.FirebaseTestRunner"
     }
 
     signingConfigs {
@@ -120,6 +120,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:core:1.6.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2026.06.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")

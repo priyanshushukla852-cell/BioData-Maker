@@ -11,11 +11,10 @@ import org.junit.runner.RunWith
 /**
  * Compose UI tests for standalone components that have no Firebase/Room dependency.
  *
- * Note: full-screen composables like [TemplatePickerScreen] and [BiodataPreviewScreen]
- * are intentionally NOT tested here — they call FirebaseAuth.getInstance() and
- * BioDataDatabase.getInstance() directly, which throw "Default FirebaseApp is not
- * initialized" in a test process. Testing those requires DI / a Firebase test harness,
- * tracked separately. Offline-first persistence is covered by BiodataDaoTest instead.
+ * Full-screen composables ([TemplatePickerScreen], [BiodataPreviewScreen]) that call
+ * FirebaseAuth.getInstance() are covered in [BiodataScreenInstrumentedTest], which relies
+ * on the stub FirebaseApp registered by [com.biodataai.app.FirebaseTestRunner].
+ * Offline-first persistence is covered by [com.biodataai.app.db.BiodataDaoTest].
  */
 @RunWith(AndroidJUnit4::class)
 class FormScreensInstrumentedTest {
