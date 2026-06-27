@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biodataai.app.db.BioDataDatabase
+import com.biodataai.app.repository.TemplateRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +29,8 @@ class TemplatePickerViewModel(
     context: Context,
     private val biodataId: String,
     firebaseAuth: FirebaseAuth,
-    private val database: BioDataDatabase
+    private val database: BioDataDatabase,
+    private val templateRepository: TemplateRepository = TemplateRepository(context)
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TemplatePickerUiState())
@@ -41,38 +43,14 @@ class TemplatePickerViewModel(
     private fun loadTemplates() {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         viewModelScope.launch {
-            try {
-                // Hardcoded templates for MVP (v1.0)
-                // Backend would serve these from /api/templates endpoint
-                val templates = listOf(
-                    TemplateOption(
-                        id = "classic",
-                        name = "Classic",
-                        description = "Traditional wedding biodata format"
-                    ),
-                    TemplateOption(
-                        id = "modern",
-                        name = "Modern",
-                        description = "Contemporary professional layout"
-                    ),
-                    TemplateOption(
-                        id = "minimal",
-                        name = "Minimal",
-                        description = "Clean and simple design"
-                    )
-                )
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    templates = templates,
-                    selectedTemplateId = templates.firstOrNull()?.id
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Unable to load templates"
-                )
-            }
+            // Fetches the non-premium catalogue from /api/templates; falls back to the
+            // built-in defaults when offline. See TemplateRepository for the v1 scoping rules.
+            val templates = templateRepository.getTemplates()
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                templates = templates,
+                selectedTemplateId = templates.firstOrNull()?.id
+            )
         }
     }
 

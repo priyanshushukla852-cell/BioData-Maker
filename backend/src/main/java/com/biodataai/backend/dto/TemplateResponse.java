@@ -9,7 +9,8 @@ public record TemplateResponse(
         String name,
         String previewUrl,
         TemplateStyle style,
-        boolean supportsHindi) {
+        boolean supportsHindi,
+        boolean premium) {
 
     public static TemplateResponse from(Template template) {
         return new TemplateResponse(
@@ -17,6 +18,7 @@ public record TemplateResponse(
                 template.getName(),
                 template.getPreviewUrl(),
                 template.getStyle(),
-                template.isSupportsHindi());
+                template.isSupportsHindi(),
+                template.isPremium());
     }
 }
