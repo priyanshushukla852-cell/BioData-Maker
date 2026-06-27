@@ -17,6 +17,9 @@ android/.cxx/
 # Firebase / secrets
 google-services.json
 **/*serviceAccountKey*.json
+# Firebase Admin SDK private keys (server-side secret — never commit)
+*firebase-adminsdk*.json
+**/*firebase-adminsdk*.json
 .env
 .env.*
 
