@@ -11,8 +11,9 @@ import com.biodataai.app.ui.viewmodel.FormState
  * Per CLAUDE.md, income/caste/Manglik are intentionally excluded from the Classic template rather
  * than hardcoded into every output. Empty fields are omitted so the document stays clean.
  *
- * Only the "classic" template is implemented for now; "modern"/"minimal" follow after Hindi
- * rendering is verified.
+ * Three templates share the engine; they differ only in which sections/fields they show and in
+ * what order — never in the layout primitives — so EN/HI parity and the PDF/preview consistency
+ * hold across all of them.
  */
 object TemplateRenderer {
 
@@ -22,7 +23,9 @@ object TemplateRenderer {
         labels: TemplateLabels,
         summary: String
     ): BiodataDocument = when (templateId) {
-        else -> classic(form, labels, summary) // only Classic exists yet; others fall back to it
+        "modern" -> modern(form, labels, summary)
+        "minimal" -> minimal(form, labels, summary)
+        else -> classic(form, labels, summary)
     }
 
     private fun classic(form: FormState, labels: TemplateLabels, summary: String): BiodataDocument {
@@ -52,6 +55,65 @@ object TemplateRenderer {
             }
         }
         return BiodataDocument(title = labels.title, blocks = blocks)
+    }
+
+    /**
+     * Modern: leads with the person's name as the header, then a professional profile, brief
+     * personal facts, and the summary. Education/Career fields come from step3.
+     */
+    private fun modern(form: FormState, labels: TemplateLabels, summary: String): BiodataDocument {
+        val blocks = buildList {
+            add(TemplateBlock.Title(form.step1.fullName.ifBlank { labels.title }))
+            add(TemplateBlock.Gap(8f))
+            add(TemplateBlock.Divider)
+            add(TemplateBlock.Gap(8f))
+
+            add(TemplateBlock.Section(labels.sectionProfessional))
+            addField(labels.occupation, form.step3.occupation)
+            addField(labels.education, form.step3.educationLevel)
+            addField(labels.company, form.step3.companyName)
+
+            add(TemplateBlock.Gap(12f))
+            add(TemplateBlock.Section(labels.sectionPersonal))
+            addField(labels.age, ageFromDob(form.step1.dob))
+            addField(labels.height, heightWithUnit(form.step1.heightCm, labels.cm))
+            addField(labels.religion, form.step1.religion)
+
+            if (summary.isNotBlank()) {
+                add(TemplateBlock.Gap(12f))
+                add(TemplateBlock.Section(labels.sectionAbout))
+                add(TemplateBlock.Paragraph(summary.trim()))
+            }
+        }
+        return BiodataDocument(title = labels.title, blocks = blocks)
+    }
+
+    /**
+     * Minimal: name, a single compact identity line, and the summary — no section headers or
+     * labelled rows.
+     */
+    private fun minimal(form: FormState, labels: TemplateLabels, summary: String): BiodataDocument {
+        val identity = listOf(form.step1.dob, form.step1.gender)
+            .map { it.trim() }.filter { it.isNotEmpty() }.joinToString("  •  ")
+        val blocks = buildList {
+            add(TemplateBlock.Title(form.step1.fullName.ifBlank { labels.title }))
+            if (identity.isNotEmpty()) {
+                add(TemplateBlock.Gap(4f))
+                add(TemplateBlock.Paragraph(identity))
+            }
+            if (summary.isNotBlank()) {
+                add(TemplateBlock.Gap(12f))
+                add(TemplateBlock.Paragraph(summary.trim()))
+            }
+        }
+        return BiodataDocument(title = labels.title, blocks = blocks)
+    }
+
+    /** Approximate age in years from a "YYYY-MM-DD" dob; empty if the year can't be parsed. */
+    private fun ageFromDob(dob: String): String {
+        val birthYear = dob.trim().take(4).toIntOrNull() ?: return ""
+        val age = java.time.Year.now().value - birthYear
+        return if (age in 1..150) age.toString() else ""
     }
 
     /** Adds a [TemplateBlock.Field] only when the user actually entered a value. */

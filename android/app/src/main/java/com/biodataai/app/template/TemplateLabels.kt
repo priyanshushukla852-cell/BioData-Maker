@@ -27,7 +27,12 @@ class TemplateLabels private constructor(
     val phone: String,
     val email: String,
     val address: String,
-    val sectionAbout: String
+    val sectionAbout: String,
+    val sectionProfessional: String,
+    val occupation: String,
+    val education: String,
+    val company: String,
+    val age: String
 ) {
     companion object {
         fun forLanguage(context: Context, language: LanguagePref): TemplateLabels {
@@ -47,7 +52,12 @@ class TemplateLabels private constructor(
                 phone = res.getString(R.string.doc_label_phone),
                 email = res.getString(R.string.doc_label_email),
                 address = res.getString(R.string.doc_label_address),
-                sectionAbout = res.getString(R.string.doc_section_about)
+                sectionAbout = res.getString(R.string.doc_section_about),
+                sectionProfessional = res.getString(R.string.doc_section_professional),
+                occupation = res.getString(R.string.doc_label_occupation),
+                education = res.getString(R.string.doc_label_education),
+                company = res.getString(R.string.doc_label_company),
+                age = res.getString(R.string.doc_label_age)
             )
         }
     }

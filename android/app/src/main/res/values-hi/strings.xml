@@ -28,4 +28,10 @@
     <string name="doc_label_email">ईमेल</string>
     <string name="doc_label_address">पता</string>
     <string name="doc_section_about">परिचय</string>
+    <!-- Modern template -->
+    <string name="doc_section_professional">व्यावसायिक विवरण</string>
+    <string name="doc_label_occupation">व्यवसाय</string>
+    <string name="doc_label_education">शिक्षा</string>
+    <string name="doc_label_company">कंपनी</string>
+    <string name="doc_label_age">आयु</string>
 </resources>

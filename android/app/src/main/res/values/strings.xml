@@ -102,6 +102,12 @@
     <string name="doc_label_email">Email</string>
     <string name="doc_label_address">Address</string>
     <string name="doc_section_about">About</string>
+    <!-- Modern template -->
+    <string name="doc_section_professional">Professional Profile</string>
+    <string name="doc_label_occupation">Occupation</string>
+    <string name="doc_label_education">Education</string>
+    <string name="doc_label_company">Company</string>
+    <string name="doc_label_age">Age</string>
 
     <!-- Errors -->
     <string name="required_field_empty">This field is required</string>
