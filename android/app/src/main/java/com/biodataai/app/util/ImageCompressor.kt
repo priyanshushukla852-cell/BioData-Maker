@@ -41,7 +41,7 @@ object ImageCompressor {
     suspend fun compressImage(context: Context, imageUri: Uri): CompressionResult {
         return withContext(Dispatchers.Default) {
             try {
-                // Pre-check file size
+                // Pre-check file size: reject obviously oversized files (>100MB uncompressed is always too large)
                 val cursor = context.contentResolver.query(imageUri, arrayOf(android.provider.MediaStore.MediaColumns.SIZE), null, null, null)
                 val fileSize = if (cursor != null) {
                     cursor.use {
@@ -50,7 +50,7 @@ object ImageCompressor {
                 } else {
                     -1L
                 }
-                if (fileSize > MAX_FILE_SIZE_BYTES * 10) { // Allow 50MB max before compression
+                if (fileSize > 0 && fileSize > 100 * 1024 * 1024) { // Reject files > 100MB uncompressed
                     return@withContext CompressionResult(false, error = "File is too large. Maximum 5MB allowed after compression.")
                 }
 

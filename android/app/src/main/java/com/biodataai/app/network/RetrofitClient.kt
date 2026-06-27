@@ -20,6 +20,7 @@ object RetrofitClient {
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AuthInterceptor(FirebaseAuth.getInstance()))
+            .addInterceptor(IdempotencyInterceptor())
             .addInterceptor(RetryInterceptor(maxRetries = 3, initialDelayMs = 100))
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

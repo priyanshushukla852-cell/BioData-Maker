@@ -3,16 +3,17 @@ package com.biodataai.app.network.api
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-data class VerifyOtpRequest(
-    val phoneNumber: String,
-    val otp: String
+data class VerifyTokenRequest(
+    val idToken: String
 )
 
-data class VerifyOtpResponse(
-    val firebaseCustomToken: String
+data class VerifyTokenResponse(
+    val userId: String,
+    val isNewUser: Boolean,
+    val displayName: String?
 )
 
 interface AuthService {
-    @POST("/api/auth/verify-otp")
-    suspend fun verifyOtp(@Body request: VerifyOtpRequest): VerifyOtpResponse
+    @POST("/api/auth/verify-token")
+    suspend fun verifyToken(@Body request: VerifyTokenRequest): VerifyTokenResponse
 }

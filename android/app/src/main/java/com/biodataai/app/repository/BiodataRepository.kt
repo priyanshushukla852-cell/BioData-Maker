@@ -9,6 +9,7 @@ import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.network.RetrofitClient
 import com.biodataai.app.network.api.BiodataService
 import com.biodataai.app.network.api.CreateBiodataRequest
+import com.biodataai.app.network.api.UpdateBiodataRequest
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import java.util.UUID
@@ -85,9 +86,12 @@ class BiodataRepository(
             biodataDao.updateBiodata(biodata)
             // Sync update to backend (non-blocking)
             try {
-                // TODO: Create PUT endpoint for updates
+                val request = UpdateBiodataRequest(
+                    formDataJson = biodata.formDataJson ?: "{}"
+                )
+                biodataService.updateBiodata(biodata.id, request)
             } catch (e: Exception) {
-                // Offline — update will sync on next connectivity
+                // Offline or backend error — update will sync on next connectivity
             }
             Result.Success(Unit)
         } catch (e: Exception) {

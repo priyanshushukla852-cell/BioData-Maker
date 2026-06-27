@@ -53,6 +53,7 @@ public class BiodataController {
     }
 
     @PutMapping("/{id}")
+    @Idempotent
     public BiodataResponse update(
             @RequestAttribute(FirebaseAuthFilter.USER_ID_ATTRIBUTE) UUID userId,
             @PathVariable UUID id,
