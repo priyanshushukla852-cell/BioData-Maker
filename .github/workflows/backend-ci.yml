@@ -31,3 +31,19 @@ jobs:
 
       - name: Build and test
         run: ./gradlew build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        run: |
+          curl -X POST https://api.railway.app/graphql \
+            -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "query": "mutation { serviceInstanceDeploy(input: {projectId: \"${{ secrets.RAILWAY_PROJECT_ID }}\", serviceId: \"${{ secrets.RAILWAY_SERVICE_ID }}\"}) { id } }"
+            }'
