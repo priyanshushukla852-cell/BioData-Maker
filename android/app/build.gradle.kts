@@ -38,10 +38,16 @@ android {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Production backend on Railway (HTTPS required — Android blocks cleartext by default).
+            buildConfigField("String", "API_BASE_URL", "\"https://biodata-maker-production.up.railway.app/\"")
         }
         debug {
             // StrictMode (disk/network-on-main-thread detection) is enabled in BioDataApplication
             // only for debug builds — see Phase 5 crash-reduction tooling.
+            // Points at the live Railway backend so on-device/emulator testing works without a
+            // local server. To run against a local backend instead, use "http://10.0.2.2:8080/"
+            // (emulator loopback) and add a cleartext network-security-config for that host.
+            buildConfigField("String", "API_BASE_URL", "\"https://biodata-maker-production.up.railway.app/\"")
         }
     }
 
@@ -57,6 +63,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

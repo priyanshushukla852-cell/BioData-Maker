@@ -1,6 +1,7 @@
 package com.biodataai.app.network
 
 import android.content.Context
+import com.biodataai.app.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,7 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private const val BASE_URL = "http://localhost:8080/" // Development; switch to production URL at build time
+    // Backend base URL is set per build type via buildConfigField (see app/build.gradle.kts).
+    private const val BASE_URL = BuildConfig.API_BASE_URL
 
     fun getRetrofit(context: Context): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
