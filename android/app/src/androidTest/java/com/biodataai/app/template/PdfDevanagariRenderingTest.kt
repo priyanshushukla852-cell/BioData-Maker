@@ -8,6 +8,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.ui.viewmodel.ContactInfoForm
+import com.biodataai.app.ui.viewmodel.EducationCareerForm
 import com.biodataai.app.ui.viewmodel.FormState
 import com.biodataai.app.ui.viewmodel.PersonalDetailsForm
 import org.junit.Assert.assertTrue
@@ -15,13 +16,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * Verifies the Devanagari/Hindi PDF path actually draws glyphs (CLAUDE.md: Devanagari rendering
- * must be verified for any new PDF output path).
+ * Verifies every template's Devanagari/Hindi PDF path actually draws glyphs (CLAUDE.md:
+ * Devanagari rendering must be verified for any new PDF output path).
  *
- * Strategy: render a Hindi biodata through the real [PdfLayoutEngine], rasterize page 0 with
- * [PdfRenderer], and assert the page contains a substantial number of dark text pixels. This
- * catches the failure modes that matter — missing font asset, blank page, or a crash in the
- * StaticLayout/Typeface path — which would otherwise ship silently as tofu/empty Hindi PDFs.
+ * Strategy: render a Hindi biodata through the real [PdfLayoutEngine] for each template,
+ * rasterize page 0 with [PdfRenderer], and assert the page contains a substantial number of dark
+ * text pixels. This catches the failure modes that matter — missing font asset, blank page, or a
+ * crash in the StaticLayout/Typeface path — which would otherwise ship silently as tofu/empty
+ * Hindi PDFs. Each template is guarded separately so a regression in one layout can't hide behind
+ * another.
  */
 @RunWith(AndroidJUnit4::class)
 class PdfDevanagariRenderingTest {
@@ -29,36 +32,31 @@ class PdfDevanagariRenderingTest {
     private val context = ApplicationProvider.getApplicationContext<android.content.Context>()
 
     @Test
-    fun hindiBiodata_rendersNonBlankGlyphsToPdf() {
-        val form = FormState(
-            step1 = PersonalDetailsForm(
-                fullName = "प्रियांशु शुक्ला",
-                dob = "1996-04-12",
-                gender = "पुरुष",
-                religion = "हिन्दू",
-                heightCm = "175"
-            ),
-            step6 = ContactInfoForm(
-                phone = "+910000000000",
-                email = "test@example.com",
-                address = "१२३ परीक्षण मार्ग"
-            )
-        )
+    fun classicTemplate_rendersHindiGlyphs() = assertTemplateRendersDarkGlyphs("classic")
+
+    @Test
+    fun modernTemplate_rendersHindiGlyphs() = assertTemplateRendersDarkGlyphs("modern")
+
+    @Test
+    fun minimalTemplate_rendersHindiGlyphs() = assertTemplateRendersDarkGlyphs("minimal")
+
+    /** Renders the given template in Hindi and asserts the first PDF page has real drawn glyphs. */
+    private fun assertTemplateRendersDarkGlyphs(templateId: String) {
         val labels = TemplateLabels.forLanguage(context, LanguagePref.HI)
         val document = TemplateRenderer.buildDocument(
-            templateId = "classic",
-            form = form,
+            templateId = templateId,
+            form = hindiForm(),
             labels = labels,
             summary = "एक समर्पित सॉफ़्टवेयर इंजीनियर जो परिवार को महत्व देता है।"
         )
 
-        val file = PdfLayoutEngine(context).render(document, "test_hindi_biodata")
+        val file = PdfLayoutEngine(context).render(document, "test_hindi_${templateId}")
         try {
-            assertTrue("PDF file should be non-trivial in size", file.length() > 1000)
+            assertTrue("[$templateId] PDF file should be non-trivial in size", file.length() > 1000)
 
             ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY).use { pfd ->
                 PdfRenderer(pfd).use { renderer ->
-                    assertTrue("PDF should have at least one page", renderer.pageCount >= 1)
+                    assertTrue("[$templateId] PDF should have at least one page", renderer.pageCount >= 1)
                     renderer.openPage(0).use { page ->
                         val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
                         bitmap.eraseColor(Color.WHITE)
@@ -66,10 +64,10 @@ class PdfDevanagariRenderingTest {
 
                         val darkPixels = countDarkPixels(bitmap)
                         bitmap.recycle()
-                        // A page with the Hindi labels + values drawn should have thousands of dark
-                        // pixels; 500 is a conservative floor that still rules out a blank/tofu-free page.
+                        // Even Minimal (name + identity line + summary) draws thousands of dark
+                        // pixels; 500 is a conservative floor that still rules out a blank/tofu page.
                         assertTrue(
-                            "Expected rendered Devanagari text (dark pixels), found only $darkPixels",
+                            "[$templateId] expected rendered Devanagari text (dark pixels), found only $darkPixels",
                             darkPixels > 500
                         )
                     }
@@ -79,6 +77,27 @@ class PdfDevanagariRenderingTest {
             file.delete()
         }
     }
+
+    /** Hindi sample covering the fields all three templates draw (personal, career, contact). */
+    private fun hindiForm() = FormState(
+        step1 = PersonalDetailsForm(
+            fullName = "प्रियांशु शुक्ला",
+            dob = "1996-04-12",
+            gender = "पुरुष",
+            religion = "हिन्दू",
+            heightCm = "175"
+        ),
+        step3 = EducationCareerForm(
+            educationLevel = "स्नातकोत्तर",
+            occupation = "सॉफ़्टवेयर इंजीनियर",
+            companyName = "टेक कंपनी"
+        ),
+        step6 = ContactInfoForm(
+            phone = "+910000000000",
+            email = "test@example.com",
+            address = "१२३ परीक्षण मार्ग"
+        )
+    )
 
     private fun countDarkPixels(bitmap: Bitmap): Int {
         var count = 0
