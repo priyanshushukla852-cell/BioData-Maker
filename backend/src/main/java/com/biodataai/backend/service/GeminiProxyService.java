@@ -102,7 +102,8 @@ public class GeminiProxyService {
         try {
             GeminiGenerateResponse response = client
                     .post()
-                    .uri("/models/{model}:generateContent?key={key}", model, apiKey)
+                    .uri("/models/{model}:generateContent", model)
+                    .header("X-goog-api-key", apiKey)
                     .body(GeminiGenerateRequest.ofPrompt(prompt))
                     .retrieve()
                     .body(GeminiGenerateResponse.class);
