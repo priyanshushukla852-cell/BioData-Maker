@@ -45,7 +45,6 @@ jobs:
           api-level: 26
           target: default
           arch: x86_64
-          enable-kvm: true
           working-directory: android
           script: ./gradlew connectedAndroidTest
 

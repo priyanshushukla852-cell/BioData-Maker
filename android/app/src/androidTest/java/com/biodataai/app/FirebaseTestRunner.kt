@@ -27,7 +27,17 @@ class FirebaseTestRunner : AndroidJUnitRunner() {
                 .setApiKey("AIzaSyDUMMY-KEY-FOR-INSTRUMENTED-TESTS-0000")
                 .setProjectId("biodata-instrumented-tests")
                 .build()
-            FirebaseApp.initializeApp(app, options)
+            try {
+                FirebaseApp.initializeApp(app, options)
+            } catch (e: Exception) {
+                // initializeApp eagerly inits ALL Firebase components. firebase-crashlytics is on
+                // the classpath but its Gradle plugin isn't applied yet (no google-services.json),
+                // so its eager init throws "build ID is missing" and would crash the whole test
+                // process. The FirebaseApp is still registered before that throw, which is all the
+                // screen tests need (FirebaseAuth.getInstance() resolves Auth lazily, independent of
+                // Crashlytics). Swallow so the process — and Firebase-free tests like
+                // PdfDevanagariRenderingTest — can run.
+            }
         }
         super.callApplicationOnCreate(app)
     }
