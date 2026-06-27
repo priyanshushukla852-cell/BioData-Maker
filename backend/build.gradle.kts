@@ -42,3 +42,11 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+// Disable the plain (library) jar so only the executable Spring Boot jar is produced.
+// Otherwise `build` emits both backend-*.jar and backend-*-plain.jar, and a `*.jar` glob
+// in the Railway start command can match the plain jar (no Main-Class) -> "no main
+// manifest attribute". With this, build/libs/ contains exactly one runnable jar.
+tasks.named("jar") {
+	enabled = false
+}
