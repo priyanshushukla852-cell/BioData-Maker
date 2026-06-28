@@ -5,10 +5,15 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.gms.ads.rewarded.ServerSideVerificationOptions
 
 object AdManager {
     private var interstitialAd: InterstitialAd? = null
     private var isAdLoaded = false
+
+    private var rewardedAd: RewardedAd? = null
 
     /**
      * Initialize Mobile Ads SDK (call once at app startup)
@@ -94,5 +99,81 @@ object AdManager {
     fun resetAd() {
         interstitialAd = null
         isAdLoaded = false
+    }
+
+    // --- Rewarded ad: "watch an ad to unlock one more AI summary" after the daily cap ---
+    //
+    // The grant is recorded server-side via AdMob Server-Side Verification (SSV): we set the
+    // user's Firebase uid as SSV custom data, AdMob calls the backend's /api/admob/ssv with it,
+    // and the backend (after verifying Google's signature) credits +1 generation. The app does
+    // not grant anything itself — it just shows the ad and then re-checks/retries the request.
+
+    /**
+     * Pre-load a rewarded ad. Uses Google's test Rewarded Ad Unit ID for development.
+     * Production: replace with the real Rewarded Ad Unit ID from https://admob.google.com and
+     * set ADMOB_REWARDED_AD_UNIT_ID on the backend so SSV callbacks are accepted.
+     */
+    fun loadRewardedAd(
+        context: Context,
+        onAdLoaded: () -> Unit = {},
+        onAdFailedToLoad: (error: String) -> Unit = {}
+    ) {
+        val adRequest = AdRequest.Builder().build()
+        // Google's test Rewarded Ad Unit ID (safe for development/testing).
+        val adUnitId = "ca-app-pub-3940256099942544/5224354917"
+
+        RewardedAd.load(
+            context,
+            adUnitId,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedAd) {
+                    rewardedAd = ad
+                    onAdLoaded()
+                }
+
+                override fun onAdFailedToLoad(adError: com.google.android.gms.ads.LoadAdError) {
+                    rewardedAd = null
+                    onAdFailedToLoad("Rewarded ad failed to load: ${adError.message}")
+                }
+            }
+        )
+    }
+
+    fun isRewardedAdReady(): Boolean = rewardedAd != null
+
+    /**
+     * Show the rewarded ad, tagging it with the user's Firebase uid for SSV so the backend can
+     * credit the right user. [onRewardEarned] fires when the user completes the ad; the caller
+     * should then re-check the AI quota / retry the summary (the backend grant lands via SSV).
+     *
+     * @return true if an ad was shown, false if none was loaded
+     */
+    fun showRewardedAd(
+        activity: android.app.Activity,
+        firebaseUid: String,
+        onRewardEarned: () -> Unit = {},
+        onAdDismissed: () -> Unit = {}
+    ): Boolean {
+        val ad = rewardedAd ?: return false
+
+        ad.setServerSideVerificationOptions(
+            ServerSideVerificationOptions.Builder()
+                .setCustomData(firebaseUid)
+                .build()
+        )
+        ad.fullScreenContentCallback = object : com.google.android.gms.ads.FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                rewardedAd = null
+                onAdDismissed()
+            }
+
+            override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
+                rewardedAd = null
+                onAdDismissed()
+            }
+        }
+        ad.show(activity) { onRewardEarned() }
+        return true
     }
 }

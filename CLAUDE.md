@@ -42,13 +42,14 @@ Follow the contracts in [§11](biodata_app_prd_erd.md#11-api-contracts-key-endpo
 
 - No ads on form input screens (Steps 1–7) or photo upload screens.
 - Max 1 interstitial ad per session, shown at PDF export.
+- **Rewarded ad (AI daily cap):** when a user hits the daily AI summary limit, the AI Summary Review screen may offer a rewarded ad to unlock one more generation. This is the only sanctioned rewarded-ad placement; it is *not* a form/photo screen, so it doesn't violate the rule above. The grant is recorded server-side via AdMob Server-Side Verification (SSV) — never trust the client that an ad was watched.
 - Hindi and English are both first-class — don't ship a feature that only renders in English. Devanagari font rendering must be verified for any new template or PDF output path.
 - AI field suggestions must return in under 3 seconds; if a feature can't realistically hit that, flag it rather than silently shipping slower.
 
 ## Open questions to flag, not silently resolve
 
 If work touches these, surface it to the user instead of assuming an answer — see [§14](biodata_app_prd_erd.md#14-open-questions):
-- Whether AI summary generation should be rate-limited per month (cost control).
+- ~~Whether AI summary generation should be rate-limited per month (cost control).~~ **Resolved (2026-06-28):** rate-limited **per day**, not per month — 3 free AI *summary* generations/user/day (field suggestions stay unmetered), each rewarded-ad unlock adds +1 for the day, unlimited unlocks. Enforced server-side (`DailyAiQuotaPolicy`), configurable via `ai.quota.daily-free-summaries`.
 - Minimum Android API level (26 vs 24).
 - Whether a "partner preferences" section or joint family biodata format is in scope.
 - Ask question whenever in doubt, don't assume anything

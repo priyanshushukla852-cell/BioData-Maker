@@ -63,6 +63,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
+import com.biodataai.app.util.AdManager
 import com.biodataai.app.util.ImageCompressor
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
@@ -691,6 +692,52 @@ fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
                     .padding(16.dp),
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
             ) {
+                if (uiState.quotaExceeded) {
+                    item {
+                        val activity = context as? android.app.Activity
+                        // Pre-load the rewarded ad as soon as the cap is hit so the button is ready.
+                        LaunchedEffect(Unit) { AdManager.loadRewardedAd(context) }
+                        Card(modifier = Modifier.fillMaxWidth()) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    stringResource(R.string.ai_daily_limit_title),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                                Text(stringResource(R.string.ai_daily_limit_body), fontSize = 14.sp)
+                                if (uiState.adRewardAvailable) {
+                                    Button(
+                                        onClick = {
+                                            val uid = firebaseAuth.currentUser?.uid
+                                            if (activity != null && uid != null) {
+                                                val shown = AdManager.showRewardedAd(
+                                                    activity = activity,
+                                                    firebaseUid = uid,
+                                                    onAdDismissed = { viewModel.retryAfterAdReward() }
+                                                )
+                                                // Not loaded yet — fetch one for the next tap.
+                                                if (!shown) AdManager.loadRewardedAd(context)
+                                            }
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(stringResource(R.string.ai_watch_ad_for_more))
+                                    }
+                                }
+                                OutlinedButton(
+                                    onClick = { viewModel.skipAiAndWriteManually() },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(stringResource(R.string.ai_write_own_instead))
+                                }
+                            }
+                        }
+                    }
+                }
+
                 item {
                     if (uiState.isManualEntry) {
                         Text("Write Your Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)

@@ -113,4 +113,10 @@
     <string name="invalid_email">अमान्य ईमेल पता</string>
     <string name="max_photos_reached">अधिकतम 5 फोटो पहुँच गई। और जोड़ने के लिए फोटो हटाएं।</string>
     <string name="image_too_large">छवि बहुत बड़ी है। संपीड़न के बाद अधिकतम 5MB।</string>
+
+    <!-- AI daily quota / rewarded ad -->
+    <string name="ai_daily_limit_title">दैनिक सीमा समाप्त</string>
+    <string name="ai_daily_limit_body">आपने आज के मुफ़्त AI सारांश उपयोग कर लिए हैं। एक और बनाने के लिए एक छोटा विज्ञापन देखें।</string>
+    <string name="ai_watch_ad_for_more">1 और के लिए विज्ञापन देखें</string>
+    <string name="ai_write_own_instead">इसके बजाय अपना सारांश लिखें</string>
 </resources>

@@ -115,4 +115,10 @@
     <string name="invalid_email">Invalid email address</string>
     <string name="max_photos_reached">Maximum 5 photos reached. Delete photos to add more.</string>
     <string name="image_too_large">Image too large. Maximum 5MB after compression.</string>
+
+    <!-- AI daily quota / rewarded ad -->
+    <string name="ai_daily_limit_title">Daily limit reached</string>
+    <string name="ai_daily_limit_body">You\'ve used today\'s free AI summaries. Watch a short ad to generate one more.</string>
+    <string name="ai_watch_ad_for_more">Watch ad for 1 more</string>
+    <string name="ai_write_own_instead">Write your own summary instead</string>
 </resources>

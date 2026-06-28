@@ -9,18 +9,23 @@ import com.biodataai.app.network.api.AiSummaryRequest
 import com.biodataai.app.network.api.BiodataService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import retrofit2.HttpException
 
 data class AiSummaryUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val summary: String = "",
     val isManualEntry: Boolean = false,
-    val keywords: List<String> = emptyList()
+    val keywords: List<String> = emptyList(),
+    // Daily AI cap reached (backend returned 429). When true the UI offers a rewarded ad.
+    val quotaExceeded: Boolean = false,
+    val adRewardAvailable: Boolean = false
 )
 
 class AiSummaryViewModel(
@@ -40,7 +45,7 @@ class AiSummaryViewModel(
     }
 
     fun generateAiSummary() {
-        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null, quotaExceeded = false)
         viewModelScope.launch {
             try {
                 val biodata = database.biodataDao().getBiodataById(biodataId)
@@ -80,6 +85,23 @@ class AiSummaryViewModel(
                         isManualEntry = true
                     )
                 }
+            } catch (e: HttpException) {
+                if (e.code() == 429) {
+                    // Daily AI cap reached. Offer the rewarded-ad path instead of manual entry.
+                    val adAvailable = parseAdRewardAvailable(e)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        quotaExceeded = true,
+                        adRewardAvailable = adAvailable,
+                        error = null
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Unable to generate summary. Please write your own.",
+                        isManualEntry = true
+                    )
+                }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -87,6 +109,28 @@ class AiSummaryViewModel(
                     isManualEntry = true
                 )
             }
+        }
+    }
+
+    /**
+     * Called after the user finishes a rewarded ad. The backend grant arrives asynchronously via
+     * AdMob SSV, so retry with a short delay (and a couple of attempts) to let it land.
+     */
+    fun retryAfterAdReward() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, quotaExceeded = false, error = null)
+            delay(SSV_GRANT_LANDING_DELAY_MS)
+            generateAiSummary()
+        }
+    }
+
+    private fun parseAdRewardAvailable(e: HttpException): Boolean {
+        return try {
+            val body = e.response()?.errorBody()?.string() ?: return true
+            val map = Gson().fromJson(body, Map::class.java)
+            map["adRewardAvailable"] as? Boolean ?: true
+        } catch (_: Exception) {
+            true // default to offering the ad if the body can't be parsed
         }
     }
 
@@ -105,5 +149,11 @@ class AiSummaryViewModel(
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
+    }
+
+    companion object {
+        // AdMob SSV is server-to-server and can land just after the ad is dismissed; wait briefly
+        // before retrying so the backend has recorded the +1 grant.
+        private const val SSV_GRANT_LANDING_DELAY_MS = 2000L
     }
 }
