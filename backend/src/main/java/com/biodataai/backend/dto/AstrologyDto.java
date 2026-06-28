@@ -8,5 +8,6 @@ public record AstrologyDto(
         String nakshatra,
         Manglik manglik,
         LocalTime birthTime,
-        String birthPlace) {
+        String birthPlace,
+        String sunSign) {
 }

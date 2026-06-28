@@ -45,4 +45,7 @@ public class EducationCareer {
 
     @Column(name = "work_location", length = 100)
     private String workLocation;
+
+    @Column(name = "education_field", length = 100)
+    private String educationField;
 }

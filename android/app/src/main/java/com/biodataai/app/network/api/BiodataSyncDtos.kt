@@ -22,7 +22,8 @@ data class PersonalDetailsDto(
     val gotra: String?,
     val heightCm: Int?,
     val complexion: String?,
-    val disability: String?
+    val disability: String?,
+    val maritalStatus: String?
 )
 
 data class FamilyDetailsDto(
@@ -32,7 +33,8 @@ data class FamilyDetailsDto(
     val motherOccupation: String?,
     val siblings: String?,
     val familyType: String?,
-    val familyValues: String?
+    val familyValues: String?,
+    val familyStatus: String?
 )
 
 data class EducationCareerDto(
@@ -41,7 +43,8 @@ data class EducationCareerDto(
     val jobTitle: String?,
     val company: String?,
     val annualIncome: String?,
-    val workLocation: String?
+    val workLocation: String?,
+    val educationField: String?
 )
 
 data class LifestyleDto(
@@ -49,7 +52,8 @@ data class LifestyleDto(
     val drinking: String?,   // NO | YES | OCCASIONALLY
     val smoking: String?,    // NO | YES | OCCASIONALLY
     val hobbies: String?,
-    val languagesSpoken: String?
+    val languagesSpoken: String?,
+    val interests: String?
 )
 
 data class AstrologyDto(
@@ -57,7 +61,8 @@ data class AstrologyDto(
     val nakshatra: String?,
     val manglik: String?,    // YES | NO | PARTIAL
     val birthTime: String?,  // ISO HH:mm
-    val birthPlace: String?
+    val birthPlace: String?,
+    val sunSign: String?
 )
 
 data class ContactInfoDto(
@@ -65,21 +70,18 @@ data class ContactInfoDto(
     val contactEmail: String?,
     val city: String?,
     val state: String?,
-    val country: String?
+    val country: String?,
+    val address: String?,
+    val postalCode: String?
 )
 
 private fun String.orNull(): String? = trim().ifBlank { null }
 
 /**
- * Maps the local [FormState] into the backend's structured update request.
- *
- * Notes on field gaps between the app's form and the backend ERD (data that is intentionally
- * remapped or dropped on sync — surfaced so it isn't a silent surprise):
- *  - personal.maritalStatus, education.educationField, contact.address/postalCode, astrology.sunSign
- *    have no backend column and are not sent.
- *  - family.familyStatus (wealth) is placed into the backend's free-text familyValues.
- *  - lifestyle.interests is appended to hobbies (backend has no separate interests column).
- *  - astrology.moonSign maps to rashi.
+ * Maps the local [FormState] into the backend's structured update request. Every form field now
+ * has a dedicated backend column (added in migration V5), so nothing is dropped. The only
+ * semantic mapping that remains is astrology.moonSign -> rashi (rashi *is* the moon sign in Vedic
+ * astrology; sunSign has its own column).
  */
 fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
     val p = step1
@@ -98,7 +100,8 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         gotra = p.gotra.orNull(),
         heightCm = p.heightCm.orNull()?.toIntOrNull(),
         complexion = p.complexion.orNull(),
-        disability = null
+        disability = null,
+        maritalStatus = p.maritalStatus.orNull()
     )
 
     val family = FamilyDetailsDto(
@@ -108,7 +111,8 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         motherOccupation = f.motherOccupation.orNull(),
         siblings = f.siblingDetails.orNull() ?: f.siblingsCount.orNull(),
         familyType = f.familyType.orNull(),
-        familyValues = f.familyStatus.orNull()
+        familyValues = null,
+        familyStatus = f.familyStatus.orNull()
     )
 
     val annualIncome = e.income.orNull()?.let { inc ->
@@ -120,11 +124,10 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         jobTitle = e.designation.orNull() ?: e.occupation.orNull(),
         company = e.companyName.orNull(),
         annualIncome = annualIncome,
-        workLocation = null
+        workLocation = null,
+        educationField = e.educationField.orNull()
     )
 
-    val hobbies = listOfNotNull(l.hobbies.orNull(), l.interests.orNull())
-        .joinToString(", ").orNull()
     val lifestyle = LifestyleDto(
         diet = when (l.diet.trim().uppercase()) {
             "VEG" -> "VEG"
@@ -133,8 +136,9 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         },
         drinking = mapHabitFrequency(l.drinking),
         smoking = mapHabitFrequency(l.smoking),
-        hobbies = hobbies,
-        languagesSpoken = l.languages.orNull()
+        hobbies = l.hobbies.orNull(),
+        languagesSpoken = l.languages.orNull(),
+        interests = l.interests.orNull()
     )
 
     val astrology = AstrologyDto(
@@ -146,7 +150,8 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
             else -> null // UNKNOWN / blank -> leave unset (backend has no UNKNOWN)
         },
         birthTime = a.birthTime.orNull(),
-        birthPlace = a.birthPlace.orNull()
+        birthPlace = a.birthPlace.orNull(),
+        sunSign = a.sunSign.orNull()
     )
 
     val contact = ContactInfoDto(
@@ -154,7 +159,9 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         contactEmail = c.email.orNull(),
         city = c.city.orNull(),
         state = c.state.orNull(),
-        country = c.country.orNull()
+        country = c.country.orNull(),
+        address = c.address.orNull(),
+        postalCode = c.postalCode.orNull()
     )
 
     return UpdateBiodataRequest(
@@ -177,20 +184,20 @@ private fun mapHabitFrequency(value: String): String? = when (value.trim().upper
 
 // Each section is sent only if at least one field is non-null, so we don't create empty rows.
 private fun PersonalDetailsDto.takeIfAny() = takeIf {
-    listOfNotNull(fullName, dob, gender, religion, caste, gotra, heightCm, complexion, disability).isNotEmpty()
+    listOfNotNull(fullName, dob, gender, religion, caste, gotra, heightCm, complexion, disability, maritalStatus).isNotEmpty()
 }
 private fun FamilyDetailsDto.takeIfAny() = takeIf {
-    listOfNotNull(fatherName, fatherOccupation, motherName, motherOccupation, siblings, familyType, familyValues).isNotEmpty()
+    listOfNotNull(fatherName, fatherOccupation, motherName, motherOccupation, siblings, familyType, familyValues, familyStatus).isNotEmpty()
 }
 private fun EducationCareerDto.takeIfAny() = takeIf {
-    listOfNotNull(highestQualification, college, jobTitle, company, annualIncome, workLocation).isNotEmpty()
+    listOfNotNull(highestQualification, college, jobTitle, company, annualIncome, workLocation, educationField).isNotEmpty()
 }
 private fun LifestyleDto.takeIfAny() = takeIf {
-    listOfNotNull(diet, drinking, smoking, hobbies, languagesSpoken).isNotEmpty()
+    listOfNotNull(diet, drinking, smoking, hobbies, languagesSpoken, interests).isNotEmpty()
 }
 private fun AstrologyDto.takeIfAny() = takeIf {
-    listOfNotNull(rashi, nakshatra, manglik, birthTime, birthPlace).isNotEmpty()
+    listOfNotNull(rashi, nakshatra, manglik, birthTime, birthPlace, sunSign).isNotEmpty()
 }
 private fun ContactInfoDto.takeIfAny() = takeIf {
-    listOfNotNull(contactPhone, contactEmail, city, state, country).isNotEmpty()
+    listOfNotNull(contactPhone, contactEmail, city, state, country, address, postalCode).isNotEmpty()
 }

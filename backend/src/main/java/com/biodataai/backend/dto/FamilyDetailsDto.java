@@ -7,5 +7,6 @@ public record FamilyDetailsDto(
         String motherOccupation,
         String siblings,
         String familyType,
-        String familyValues) {
+        String familyValues,
+        String familyStatus) {
 }

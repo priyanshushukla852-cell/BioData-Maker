@@ -6,5 +6,6 @@ public record EducationCareerDto(
         String jobTitle,
         String company,
         String annualIncome,
-        String workLocation) {
+        String workLocation,
+        String educationField) {
 }

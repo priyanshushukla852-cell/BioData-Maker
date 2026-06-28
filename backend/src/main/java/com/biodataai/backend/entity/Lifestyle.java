@@ -47,4 +47,7 @@ public class Lifestyle {
 
     @Column(name = "languages_spoken", columnDefinition = "TEXT")
     private String languagesSpoken;
+
+    @Column(columnDefinition = "TEXT")
+    private String interests;
 }

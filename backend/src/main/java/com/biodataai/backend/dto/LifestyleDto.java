@@ -8,5 +8,6 @@ public record LifestyleDto(
         HabitFrequency drinking,
         HabitFrequency smoking,
         String hobbies,
-        String languagesSpoken) {
+        String languagesSpoken,
+        String interests) {
 }

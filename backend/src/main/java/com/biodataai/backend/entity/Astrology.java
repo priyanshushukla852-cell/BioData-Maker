@@ -46,4 +46,7 @@ public class Astrology {
 
     @Column(name = "birth_place", length = 100)
     private String birthPlace;
+
+    @Column(name = "sun_sign", length = 50)
+    private String sunSign;
 }

@@ -12,5 +12,6 @@ public record PersonalDetailsDto(
         String gotra,
         Integer heightCm,
         String complexion,
-        String disability) {
+        String disability,
+        String maritalStatus) {
 }

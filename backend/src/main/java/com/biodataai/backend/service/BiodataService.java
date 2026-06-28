@@ -198,6 +198,7 @@ public class BiodataService {
         entity.setHeightCm(dto.heightCm());
         entity.setComplexion(dto.complexion());
         entity.setDisability(dto.disability());
+        entity.setMaritalStatus(dto.maritalStatus());
         personalDetailsRepository.save(entity);
     }
 
@@ -216,6 +217,7 @@ public class BiodataService {
         entity.setSiblings(dto.siblings());
         entity.setFamilyType(dto.familyType());
         entity.setFamilyValues(dto.familyValues());
+        entity.setFamilyStatus(dto.familyStatus());
         familyDetailsRepository.save(entity);
     }
 
@@ -233,6 +235,7 @@ public class BiodataService {
         entity.setCompany(dto.company());
         entity.setAnnualIncome(dto.annualIncome());
         entity.setWorkLocation(dto.workLocation());
+        entity.setEducationField(dto.educationField());
         educationCareerRepository.save(entity);
     }
 
@@ -249,6 +252,7 @@ public class BiodataService {
         entity.setSmoking(dto.smoking());
         entity.setHobbies(dto.hobbies());
         entity.setLanguagesSpoken(dto.languagesSpoken());
+        entity.setInterests(dto.interests());
         lifestyleRepository.save(entity);
     }
 
@@ -265,6 +269,7 @@ public class BiodataService {
         entity.setManglik(dto.manglik());
         entity.setBirthTime(dto.birthTime());
         entity.setBirthPlace(dto.birthPlace());
+        entity.setSunSign(dto.sunSign());
         astrologyRepository.save(entity);
     }
 
@@ -281,6 +286,8 @@ public class BiodataService {
         entity.setCity(dto.city());
         entity.setState(dto.state());
         entity.setCountry(dto.country());
+        entity.setAddress(dto.address());
+        entity.setPostalCode(dto.postalCode());
         contactInfoRepository.save(entity);
     }
 
@@ -289,36 +296,42 @@ public class BiodataService {
                 .findByBiodataId(biodata.getId())
                 .map(p -> new PersonalDetailsDto(
                         p.getFullName(), p.getDob(), p.getGender(), p.getReligion(), p.getCaste(), p.getGotra(),
-                        p.getHeightCm(), p.getComplexion(), p.getDisability()))
+                        p.getHeightCm(), p.getComplexion(), p.getDisability(), p.getMaritalStatus()))
                 .orElse(null);
 
         FamilyDetailsDto familyDetails = familyDetailsRepository
                 .findByBiodataId(biodata.getId())
                 .map(f -> new FamilyDetailsDto(
                         f.getFatherName(), f.getFatherOccupation(), f.getMotherName(), f.getMotherOccupation(),
-                        f.getSiblings(), f.getFamilyType(), f.getFamilyValues()))
+                        f.getSiblings(), f.getFamilyType(), f.getFamilyValues(), f.getFamilyStatus()))
                 .orElse(null);
 
         EducationCareerDto educationCareer = educationCareerRepository
                 .findByBiodataId(biodata.getId())
                 .map(e -> new EducationCareerDto(
                         e.getHighestQualification(), e.getCollege(), e.getJobTitle(), e.getCompany(),
-                        e.getAnnualIncome(), e.getWorkLocation()))
+                        e.getAnnualIncome(), e.getWorkLocation(), e.getEducationField()))
                 .orElse(null);
 
         LifestyleDto lifestyle = lifestyleRepository
                 .findByBiodataId(biodata.getId())
-                .map(l -> new LifestyleDto(l.getDiet(), l.getDrinking(), l.getSmoking(), l.getHobbies(), l.getLanguagesSpoken()))
+                .map(l -> new LifestyleDto(
+                        l.getDiet(), l.getDrinking(), l.getSmoking(), l.getHobbies(), l.getLanguagesSpoken(),
+                        l.getInterests()))
                 .orElse(null);
 
         AstrologyDto astrology = astrologyRepository
                 .findByBiodataId(biodata.getId())
-                .map(a -> new AstrologyDto(a.getRashi(), a.getNakshatra(), a.getManglik(), a.getBirthTime(), a.getBirthPlace()))
+                .map(a -> new AstrologyDto(
+                        a.getRashi(), a.getNakshatra(), a.getManglik(), a.getBirthTime(), a.getBirthPlace(),
+                        a.getSunSign()))
                 .orElse(null);
 
         ContactInfoDto contactInfo = contactInfoRepository
                 .findByBiodataId(biodata.getId())
-                .map(c -> new ContactInfoDto(c.getContactPhone(), c.getContactEmail(), c.getCity(), c.getState(), c.getCountry()))
+                .map(c -> new ContactInfoDto(
+                        c.getContactPhone(), c.getContactEmail(), c.getCity(), c.getState(), c.getCountry(),
+                        c.getAddress(), c.getPostalCode()))
                 .orElse(null);
 
         List<PhotoDto> photos = biodataPhotoRepository

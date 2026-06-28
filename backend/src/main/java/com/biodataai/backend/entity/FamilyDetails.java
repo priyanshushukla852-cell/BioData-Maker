@@ -48,4 +48,7 @@ public class FamilyDetails {
 
     @Column(name = "family_values", length = 50)
     private String familyValues;
+
+    @Column(name = "family_status", length = 30)
+    private String familyStatus;
 }

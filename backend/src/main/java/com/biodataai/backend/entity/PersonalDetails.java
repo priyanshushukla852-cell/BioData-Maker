@@ -58,4 +58,7 @@ public class PersonalDetails {
 
     @Column(length = 100)
     private String disability;
+
+    @Column(name = "marital_status", length = 30)
+    private String maritalStatus;
 }

@@ -5,5 +5,7 @@ public record ContactInfoDto(
         String contactEmail,
         String city,
         String state,
-        String country) {
+        String country,
+        String address,
+        String postalCode) {
 }

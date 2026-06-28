@@ -42,4 +42,10 @@ public class ContactInfo {
 
     @Column(nullable = false, length = 50)
     private String country;
+
+    @Column(columnDefinition = "TEXT")
+    private String address;
+
+    @Column(name = "postal_code", length = 20)
+    private String postalCode;
 }
