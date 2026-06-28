@@ -1,6 +1,7 @@
 package com.biodataai.app.repository
 
 import android.content.Context
+import android.util.Log
 import com.biodataai.app.core.Result
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.db.entity.BiodataEntity
@@ -14,6 +15,7 @@ import com.biodataai.app.network.api.toUpdateRequest
 import com.biodataai.app.ui.viewmodel.FormState
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import retrofit2.HttpException
 import java.time.Instant
 import java.util.UUID
 
@@ -27,6 +29,14 @@ class BiodataRepository(
     }
 
     private val biodataDao = database.biodataDao()
+
+    // Server-sync failures used to be swallowed silently, which let a draft live only in Room and
+    // then made the AI summary call 500 on an id the server never received. Log them (metadata
+    // only — no PII per CLAUDE.md rule 2: just the operation, the biodata UUID, and the error type).
+    private fun logSyncFailure(op: String, biodataId: String, e: Exception) {
+        val detail = if (e is HttpException) "HTTP ${e.code()}" else e.javaClass.simpleName
+        Log.w(TAG, "Backend sync failed [$op] for biodata=$biodataId: $detail")
+    }
 
     // Create a new biodata locally and sync to backend
     suspend fun createBiodata(
@@ -75,18 +85,75 @@ class BiodataRepository(
                     CreateBiodataRequest(
                         id = biodataEntity.id,
                         title = biodataEntity.title,
-                        templateId = templateId,
+                        // templateId is a client-side design-asset key ("classic"/"modern"), NOT a
+                        // server template UUID. Sending it made the server reject the create as an
+                        // invalid UUID (400) — silently — so the row never synced. Omit it here;
+                        // the template choice only matters to client-side PDF rendering.
+                        templateId = null,
                         language = languagePref
                     )
                 )
             } catch (e: Exception) {
-                // Offline or backend error — user can still work on local draft
+                // Offline or backend error — user can still work on the local draft, but record it
+                // so a persistent sync failure is visible (Crashlytics) instead of disappearing.
+                logSyncFailure("create", biodataEntity.id, e)
             }
 
             Result.Success(biodataEntity)
         } catch (e: Exception) {
             Result.Error(e, "Failed to create biodata: ${e.message}")
         }
+    }
+
+    /**
+     * Ensure this biodata exists on the backend before a server-side operation that resolves it by
+     * id (e.g. AI summary). Drafts are created offline-first in Room and may never have synced (or
+     * the original create may have failed), so the server can 404/500 on an id it never received.
+     *
+     * Create is idempotent on the client-supplied id server-side, so this is safe to call every
+     * time. Returns [Result.Error] if the row can't be synced so the caller can surface a real
+     * message instead of the old misleading "write your own" fallback.
+     */
+    suspend fun ensureSyncedToServer(biodataId: String): Result<Unit> {
+        val biodata = biodataDao.getBiodataById(biodataId)
+            ?: return Result.Error(
+                IllegalStateException("Biodata $biodataId not found locally"),
+                "Biodata not found"
+            )
+
+        // Create-if-missing must succeed — without the server row the AI call can't resolve the id.
+        try {
+            biodataService.createBiodata(
+                CreateBiodataRequest(
+                    id = biodata.id,
+                    title = biodata.title,
+                    templateId = null, // see createBiodata: client template keys aren't server UUIDs
+                    language = biodata.language.name
+                )
+            )
+        } catch (e: Exception) {
+            logSyncFailure("ensureSynced.create", biodataId, e)
+            return Result.Error(e, "Couldn't sync your biodata to the server")
+        }
+
+        // Best-effort: push the latest form fields so the summary reflects current input. The row
+        // already exists at this point, so a failure here shouldn't block generation.
+        try {
+            val formState = try {
+                Gson().fromJson(biodata.formDataJson ?: "{}", FormState::class.java) ?: FormState()
+            } catch (e: Exception) {
+                FormState()
+            }
+            biodataService.updateBiodata(
+                biodata.id,
+                formState.toUpdateRequest(title = biodata.title.ifBlank { null })
+            )
+            biodataDao.updateBiodata(biodata.copy(syncedAt = Instant.now()))
+        } catch (e: Exception) {
+            logSyncFailure("ensureSynced.update", biodataId, e)
+        }
+
+        return Result.Success(Unit)
     }
 
     // Get user's biodatas from Room (offline-first)
@@ -125,6 +192,7 @@ class BiodataRepository(
                 biodataService.updateBiodata(biodata.id, request)
             } catch (e: Exception) {
                 // Offline or backend error — update will sync on next connectivity
+                logSyncFailure("update", biodata.id, e)
             }
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -141,10 +209,15 @@ class BiodataRepository(
                 biodataService.deleteBiodata(id)
             } catch (e: Exception) {
                 // Offline — deletion will sync on next connectivity
+                logSyncFailure("delete", id, e)
             }
             Result.Success(Unit)
         } catch (e: Exception) {
             Result.Error(e, "Failed to delete biodata: ${e.message}")
         }
+    }
+
+    companion object {
+        private const val TAG = "BiodataRepository"
     }
 }

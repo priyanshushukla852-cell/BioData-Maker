@@ -111,8 +111,10 @@
 
     <!-- Errors -->
     <string name="required_field_empty">This field is required</string>
-    <string name="invalid_date_format">Invalid date format. Use YYYY-MM-DD</string>
+    <string name="invalid_date_format">Invalid date format. Use DD-MM-YYYY</string>
     <string name="invalid_email">Invalid email address</string>
+    <string name="invalid_phone">Invalid phone number</string>
+    <string name="press_back_again_to_exit">Press back again to exit</string>
     <string name="max_photos_reached">Maximum 5 photos reached. Delete photos to add more.</string>
     <string name="image_too_large">Image too large. Maximum 5MB after compression.</string>
 

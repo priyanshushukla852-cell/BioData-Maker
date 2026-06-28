@@ -65,6 +65,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import com.biodataai.app.util.AdManager
 import com.biodataai.app.util.ImageCompressor
+import com.biodataai.app.util.InputValidation
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
@@ -274,6 +275,17 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
 
             Spacer(Modifier.weight(1f))
 
+            // Step 6 (contact) requires a validly-formatted phone and email before advancing. Step
+            // composables write to formState on each keystroke, so this stays in sync. Other steps
+            // are unrestricted.
+            val canProceed = when (step) {
+                6 -> {
+                    val s6 = uiState.formState.step6
+                    InputValidation.isValidPhone(s6.phone) && InputValidation.isValidEmail(s6.email)
+                }
+                else -> true
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -304,7 +316,7 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                         }
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = !uiState.isSaving
+                    enabled = !uiState.isSaving && canProceed
                 ) {
                     if (uiState.isSaving) {
                         CircularProgressIndicator(modifier = Modifier.height(20.dp))
@@ -320,7 +332,8 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
 @Composable
 private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var fullName by remember { mutableStateOf(uiState.formState.step1.fullName) }
-    var dob by remember { mutableStateOf(uiState.formState.step1.dob) }
+    // Field shows DD-MM-YYYY (user-friendly); FormState keeps ISO yyyy-MM-dd (or "" while partial).
+    var dobDisplay by remember { mutableStateOf(InputValidation.isoToDobDisplay(uiState.formState.step1.dob)) }
     var gender by remember { mutableStateOf(uiState.formState.step1.gender) }
     var religion by remember { mutableStateOf(uiState.formState.step1.religion) }
     var heightCm by remember { mutableStateOf(uiState.formState.step1.heightCm) }
@@ -344,14 +357,24 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
             )
         }
         item {
+            val dobError = dobDisplay.isNotBlank() && InputValidation.dobDisplayToIso(dobDisplay) == null
             FormTextField(
-                value = dob,
-                onValueChange = {
-                    dob = it
-                    viewModel.updateStep1(uiState.formState.step1.copy(dob = it))
+                value = dobDisplay,
+                onValueChange = { input ->
+                    // Auto-insert dashes as the user types; skip the trailing dash on deletion so
+                    // backspace isn't blocked by a just-completed segment's separator.
+                    val deleting = input.length < dobDisplay.length
+                    val formatted = InputValidation.formatDobInput(input, allowTrailingDash = !deleting)
+                    dobDisplay = formatted
+                    // Persist ISO only once it's a complete valid date; partial input stays "".
+                    val iso = InputValidation.dobDisplayToIso(formatted)
+                    viewModel.updateStep1(uiState.formState.step1.copy(dob = iso ?: ""))
                 },
-                label = "Date of Birth (YYYY-MM-DD) *",
-                modifier = Modifier.fillMaxWidth()
+                label = "Date of Birth (DD-MM-YYYY) *",
+                modifier = Modifier.fillMaxWidth(),
+                keyboardType = KeyboardType.Number,
+                isError = dobError,
+                supportingText = if (dobError) stringResource(R.string.invalid_date_format) else null
             )
         }
         item {
@@ -503,8 +526,14 @@ private fun FormStep6ContactInfo(viewModel: FormStepViewModel, uiState: com.biod
             .padding(16.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
     ) {
-        item { FormTextField(value = phone, onValueChange = { phone = it; viewModel.updateStep6(uiState.formState.step6.copy(phone = it)) }, label = "Phone *", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Phone) }
-        item { FormTextField(value = email, onValueChange = { email = it; viewModel.updateStep6(uiState.formState.step6.copy(email = it)) }, label = "Email *", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Email) }
+        item {
+            val phoneError = phone.isNotBlank() && !InputValidation.isValidPhone(phone)
+            FormTextField(value = phone, onValueChange = { phone = it; viewModel.updateStep6(uiState.formState.step6.copy(phone = it)) }, label = "Phone *", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Phone, isError = phoneError, supportingText = if (phoneError) stringResource(R.string.invalid_phone) else null)
+        }
+        item {
+            val emailError = email.isNotBlank() && !InputValidation.isValidEmail(email)
+            FormTextField(value = email, onValueChange = { email = it; viewModel.updateStep6(uiState.formState.step6.copy(email = it)) }, label = "Email *", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Email, isError = emailError, supportingText = if (emailError) stringResource(R.string.invalid_email) else null)
+        }
         item { FormTextField(value = address, onValueChange = { address = it; viewModel.updateStep6(uiState.formState.step6.copy(address = it)) }, label = "Address *", modifier = Modifier.fillMaxWidth()) }
     }
 }

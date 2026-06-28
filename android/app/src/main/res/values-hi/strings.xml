@@ -109,8 +109,10 @@
 
     <!-- Errors -->
     <string name="required_field_empty">यह फ़ील्ड आवश्यक है</string>
-    <string name="invalid_date_format">अमान्य तिथि प्रारूप। YYYY-MM-DD का उपयोग करें</string>
+    <string name="invalid_date_format">अमान्य तिथि प्रारूप। DD-MM-YYYY का उपयोग करें</string>
     <string name="invalid_email">अमान्य ईमेल पता</string>
+    <string name="invalid_phone">अमान्य फ़ोन नंबर</string>
+    <string name="press_back_again_to_exit">बाहर निकलने के लिए फिर से बैक दबाएं</string>
     <string name="max_photos_reached">अधिकतम 5 फोटो पहुँच गई। और जोड़ने के लिए फोटो हटाएं।</string>
     <string name="image_too_large">छवि बहुत बड़ी है। संपीड़न के बाद अधिकतम 5MB।</string>
 

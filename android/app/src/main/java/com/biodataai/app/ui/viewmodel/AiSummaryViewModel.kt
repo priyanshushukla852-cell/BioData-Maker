@@ -3,10 +3,12 @@ package com.biodataai.app.ui.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.biodataai.app.core.Result
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.network.RetrofitClient
 import com.biodataai.app.network.api.AiSummaryRequest
 import com.biodataai.app.network.api.BiodataService
+import com.biodataai.app.repository.BiodataRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
@@ -35,6 +37,7 @@ class AiSummaryViewModel(
 ) : ViewModel() {
 
     private val biodataService = RetrofitClient.getRetrofit(context).create(BiodataService::class.java)
+    private val biodataRepository = BiodataRepository(context, database)
 
     private val _uiState = MutableStateFlow(AiSummaryUiState())
     val uiState: StateFlow<AiSummaryUiState> = _uiState.asStateFlow()
@@ -52,6 +55,20 @@ class AiSummaryViewModel(
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         error = "Biodata not found"
+                    )
+                    return@launch
+                }
+
+                // Drafts are offline-first in Room and may not exist on the server yet (or the
+                // original create may have failed silently). The AI endpoint resolves the biodata
+                // by id server-side, so push it first — otherwise the call 500s on an unknown id and
+                // we'd show the misleading "write your own" fallback.
+                val sync = biodataRepository.ensureSyncedToServer(biodataId)
+                if (sync is Result.Error) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Couldn't sync your biodata. Check your connection and try again.",
+                        isManualEntry = true
                     )
                     return@launch
                 }

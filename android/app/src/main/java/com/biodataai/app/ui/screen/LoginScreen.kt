@@ -1,6 +1,7 @@
 package com.biodataai.app.ui.screen
 
 import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -38,7 +40,9 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.navigation.NavController
+import com.biodataai.app.R
 import com.biodataai.app.navigation.NavRoute
+import com.biodataai.app.ui.component.DoubleBackToExit
 import com.biodataai.app.ui.viewmodel.LoginViewModel
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -78,6 +82,14 @@ fun LoginScreen(navController: NavController) {
                 popUpTo(NavRoute.Auth.Login) { inclusive = true }
             }
         }
+    }
+
+    // Login is the pre-login root. On the main screen, double-back to exit; inside the phone OTP
+    // sub-flow, back should return to the login options instead of exiting.
+    if (uiState.phoneOtpFlow == null) {
+        DoubleBackToExit(snackbarHostState, message = stringResource(R.string.press_back_again_to_exit))
+    } else {
+        BackHandler { viewModel.cancelPhoneOtp() }
     }
 
     Box(
