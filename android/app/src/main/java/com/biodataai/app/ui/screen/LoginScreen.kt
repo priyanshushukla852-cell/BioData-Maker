@@ -159,7 +159,13 @@ fun LoginScreen(navController: NavController) {
                 PhoneOtpScreen(
                     flow = flow,
                     isLoading = uiState.isLoading,
-                    onPhoneSubmit = { viewModel.submitPhoneNumber(it) },
+                    onPhoneSubmit = { phone ->
+                        if (activity != null) {
+                            viewModel.submitPhoneNumber(activity, phone)
+                        } else {
+                            scope.launch { snackbarHostState.showSnackbar("Cannot start phone verification.") }
+                        }
+                    },
                     onOtpSubmit = { viewModel.submitOtp(it) },
                     onCancel = { viewModel.cancelPhoneOtp() }
                 )
