@@ -6,6 +6,7 @@ import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.db.entity.BiodataEntity
 import com.biodataai.app.db.entity.BiodataStatus
 import com.biodataai.app.db.entity.LanguagePref
+import com.biodataai.app.db.entity.UserEntity
 import com.biodataai.app.network.RetrofitClient
 import com.biodataai.app.network.api.BiodataService
 import com.biodataai.app.network.api.CreateBiodataRequest
@@ -31,9 +32,27 @@ class BiodataRepository(
     suspend fun createBiodata(
         userFirebaseUid: String,
         templateId: String,
-        languagePref: String
+        languagePref: String,
+        displayName: String? = null,
+        email: String? = null,
+        phoneNumber: String? = null
     ): Result<BiodataEntity> {
         return try {
+            // The biodatas.userFirebaseUid FK requires the local users row to exist first.
+            // Sign-in only authenticates with Firebase/backend; it doesn't populate Room, so
+            // ensure the row is present (no-op if it already is — see insertUserIfAbsent).
+            biodataDao.insertUserIfAbsent(
+                UserEntity(
+                    firebaseUid = userFirebaseUid,
+                    displayName = displayName,
+                    phoneNumber = phoneNumber,
+                    email = email,
+                    profilePhotoUrl = null,
+                    createdAt = Instant.now(),
+                    updatedAt = Instant.now()
+                )
+            )
+
             // Create locally first (Room as source of truth)
             val biodataEntity = BiodataEntity(
                 id = UUID.randomUUID().toString(),

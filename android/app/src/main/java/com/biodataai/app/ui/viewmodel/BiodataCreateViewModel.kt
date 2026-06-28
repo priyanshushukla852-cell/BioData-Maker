@@ -69,7 +69,10 @@ class BiodataCreateViewModel(
             when (val result = biodataRepository.createBiodata(
                 currentUser.uid,
                 template,
-                _uiState.value.selectedLanguage
+                _uiState.value.selectedLanguage,
+                displayName = currentUser.displayName,
+                email = currentUser.email,
+                phoneNumber = currentUser.phoneNumber
             )) {
                 is Result.Success -> {
                     _uiState.value = _uiState.value.copy(

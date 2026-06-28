@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.biodataai.app.db.entity.UserEntity
 import com.biodataai.app.db.entity.BiodataEntity
 import com.biodataai.app.db.entity.PersonalDetailsEntity
 import com.biodataai.app.db.entity.FamilyDetailsEntity
@@ -18,6 +19,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BiodataDao {
+    /**
+     * Insert the local user row if it doesn't already exist. Uses IGNORE (not REPLACE):
+     * biodatas cascade-delete on the users FK, so REPLACE (= DELETE + INSERT) would wipe
+     * the user's existing biodatas. The users row must exist before any biodata insert,
+     * otherwise the FK fails with SQLITE_CONSTRAINT_FOREIGNKEY[787].
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertUserIfAbsent(user: UserEntity)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBiodata(biodata: BiodataEntity)
 
