@@ -13,6 +13,16 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(AiQuotaExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleQuotaExceeded(AiQuotaExceededException e) {
+        // Distinct shape so the app can detect the daily-limit case and offer the rewarded ad.
+        return ResponseEntity.status(e.getStatus())
+                .body(Map.of(
+                        "error", e.getMessage(),
+                        "code", "daily_quota_exceeded",
+                        "adRewardAvailable", e.isAdRewardAvailable()));
+    }
+
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Map<String, String>> handleApiException(ApiException e) {
         return ResponseEntity.status(e.getStatus()).body(Map.of("error", e.getMessage()));

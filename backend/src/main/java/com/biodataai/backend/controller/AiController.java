@@ -7,12 +7,14 @@ import com.biodataai.backend.dto.AiSummaryRequest;
 import com.biodataai.backend.dto.AiSummaryResponse;
 import com.biodataai.backend.dto.BiodataResponse;
 import com.biodataai.backend.entity.Biodata;
-import com.biodataai.backend.exception.AiServiceException;
+import com.biodataai.backend.exception.AiQuotaExceededException;
 import com.biodataai.backend.service.AiQuotaPolicy;
+import com.biodataai.backend.service.AiQuotaStatus;
 import com.biodataai.backend.service.BiodataService;
 import com.biodataai.backend.service.GeminiProxyService;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +40,13 @@ public class AiController {
     public AiSummaryResponse summary(
             @RequestAttribute(FirebaseAuthFilter.USER_ID_ATTRIBUTE) UUID userId,
             @Valid @RequestBody AiSummaryRequest request) {
-        checkQuota(userId);
+        // Daily cap applies to summary generations only (field suggestions stay unmetered).
+        AiQuotaStatus quota = aiQuotaPolicy.getStatus(userId);
+        if (quota.remaining() <= 0) {
+            throw new AiQuotaExceededException(
+                    "Daily AI summary limit reached. Watch an ad to generate one more.",
+                    quota.adRewardAvailable());
+        }
         Biodata biodata = biodataService.getOwnedEntity(userId, request.biodataId());
         BiodataResponse snapshot = biodataService.getById(userId, request.biodataId());
         AiSummaryResponse response = geminiProxyService.generateSummary(biodata, snapshot, request.language());
@@ -46,18 +54,16 @@ public class AiController {
         return response;
     }
 
+    @GetMapping("/quota")
+    public AiQuotaStatus quota(@RequestAttribute(FirebaseAuthFilter.USER_ID_ATTRIBUTE) UUID userId) {
+        return aiQuotaPolicy.getStatus(userId);
+    }
+
     @PostMapping("/suggest")
     public AiSuggestResponse suggest(
             @RequestAttribute(FirebaseAuthFilter.USER_ID_ATTRIBUTE) UUID userId,
             @Valid @RequestBody AiSuggestRequest request) {
-        checkQuota(userId);
         Biodata biodata = biodataService.getOwnedEntity(userId, request.biodataId());
         return geminiProxyService.suggestField(biodata, request.fieldName(), request.currentValue());
-    }
-
-    private void checkQuota(UUID userId) {
-        if (!aiQuotaPolicy.isAllowed(userId)) {
-            throw new AiServiceException("Monthly AI usage limit reached.");
-        }
     }
 }
