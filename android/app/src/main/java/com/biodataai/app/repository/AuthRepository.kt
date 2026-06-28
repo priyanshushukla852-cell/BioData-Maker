@@ -37,6 +37,34 @@ class AuthRepository(
         }
     }
 
+    suspend fun signInWithEmail(email: String, password: String): Result<Unit> {
+        return try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            finishFirebaseSignIn()
+        } catch (e: Exception) {
+            Result.Error(e, "Email sign-in failed: ${e.message}")
+        }
+    }
+
+    suspend fun signUpWithEmail(email: String, password: String): Result<Unit> {
+        return try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            finishFirebaseSignIn()
+        } catch (e: Exception) {
+            Result.Error(e, "Account creation failed: ${e.message}")
+        }
+    }
+
+    /** After any Firebase sign-in, exchange the ID token with the backend to upsert the user. */
+    private suspend fun finishFirebaseSignIn(): Result<Unit> {
+        val user = firebaseAuth.currentUser
+            ?: return Result.Error(Exception("User is null after sign-in"), "Sign-in failed")
+        val token = user.getIdToken(false).await().token
+            ?: return Result.Error(Exception("ID token is null"), "Could not get ID token")
+        authService.verifyToken(VerifyTokenRequest(token))
+        return Result.Success(Unit)
+    }
+
     /**
      * Starts Firebase Phone Auth: sends an SMS code to [phoneNumber] (E.164, e.g. +9198...).
      * Results arrive asynchronously on [callbacks] (onCodeSent → verificationId,

@@ -3,6 +3,7 @@ package com.biodataai.app.ui.screen
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -59,6 +62,8 @@ fun LoginScreen(navController: NavController) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val activity = context as? Activity
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
@@ -145,6 +150,44 @@ fun LoginScreen(navController: NavController) {
                     enabled = !uiState.isLoading
                 ) {
                     Text("Continue with Phone")
+                }
+
+                Spacer(Modifier.height(16.dp))
+                Text("or use email")
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    enabled = !uiState.isLoading,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    enabled = !uiState.isLoading,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                Row(modifier = Modifier.padding(top = 8.dp)) {
+                    Button(
+                        onClick = { viewModel.signInWithEmail(email, password) },
+                        enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank(),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    ) {
+                        Text("Sign in")
+                    }
+                    OutlinedButton(
+                        onClick = { viewModel.signUpWithEmail(email, password) },
+                        enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank(),
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    ) {
+                        Text("Create account")
+                    }
                 }
 
                 if (uiState.isLoading) {

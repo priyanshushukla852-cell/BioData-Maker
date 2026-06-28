@@ -57,6 +57,28 @@ class LoginViewModel(
         }
     }
 
+    fun signInWithEmail(email: String, password: String) {
+        launchAsync {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            handleAuthResult(authRepository.signInWithEmail(email.trim(), password))
+        }
+    }
+
+    fun signUpWithEmail(email: String, password: String) {
+        launchAsync {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            handleAuthResult(authRepository.signUpWithEmail(email.trim(), password))
+        }
+    }
+
+    private fun handleAuthResult(result: Result<Unit>) {
+        _uiState.value = when (result) {
+            is Result.Success -> _uiState.value.copy(isLoading = false)
+            is Result.Error -> _uiState.value.copy(isLoading = false, error = result.message ?: "Authentication failed")
+            is Result.Loading -> _uiState.value.copy(isLoading = true)
+        }
+    }
+
     fun startPhoneOtp() {
         _uiState.value = _uiState.value.copy(
             phoneOtpFlow = PhoneOtpFlow(step = 1)
