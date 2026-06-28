@@ -30,19 +30,25 @@ class BiodataCreateViewModel(
     private val authRepository = AuthRepository(context, firebaseAuth)
     private val biodataRepository = BiodataRepository(context, database)
 
+    // Persist only Bundle-compatible primitives. Writing the whole data class into
+    // SavedStateHandle throws "Can't put value with type ... into saved state" because it
+    // isn't Parcelable/Serializable.
     private val _uiState = MutableStateFlow(
-        savedStateHandle.get<BiodataCreateUiState>("uiState") ?: BiodataCreateUiState()
+        BiodataCreateUiState(
+            selectedTemplate = savedStateHandle.get<String>("selectedTemplate"),
+            selectedLanguage = savedStateHandle.get<String>("selectedLanguage") ?: "EN"
+        )
     )
     val uiState: StateFlow<BiodataCreateUiState> = _uiState.asStateFlow()
 
     fun selectTemplate(templateId: String) {
         _uiState.value = _uiState.value.copy(selectedTemplate = templateId)
-        savedStateHandle["uiState"] = _uiState.value
+        savedStateHandle["selectedTemplate"] = templateId
     }
 
     fun selectLanguage(language: String) {
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
-        savedStateHandle["uiState"] = _uiState.value
+        savedStateHandle["selectedLanguage"] = language
     }
 
     fun createBiodata() {

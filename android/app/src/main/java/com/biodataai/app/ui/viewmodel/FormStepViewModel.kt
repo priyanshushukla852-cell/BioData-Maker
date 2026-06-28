@@ -48,10 +48,12 @@ class FormStepViewModel(
     val uiState: StateFlow<FormStepUiState> = _uiState.asStateFlow()
 
     init {
-        // Restore state from SavedStateHandle (survives configuration change)
-        val savedState = savedStateHandle.get<FormStepUiState>("formUiState")
-        if (savedState != null) {
-            _uiState.value = savedState
+        // Restore state from SavedStateHandle (survives configuration change). Only the
+        // form data is persisted, as a JSON string — FormStepUiState isn't Parcelable, and
+        // writing it directly throws "Can't put value with type ... into saved state".
+        val savedJson = savedStateHandle.get<String>("formStateJson")
+        if (savedJson != null) {
+            _uiState.value = FormStepUiState(formState = Gson().fromJson(savedJson, FormState::class.java))
         } else {
             loadExistingBiodata()
         }
@@ -60,7 +62,7 @@ class FormStepViewModel(
     override fun onCleared() {
         // Save state to SavedStateHandle (survives process death).
         // No super.onCleared() call: ViewModel's implementation is empty (lint: EmptySuperCall).
-        savedStateHandle["formUiState"] = _uiState.value
+        savedStateHandle["formStateJson"] = Gson().toJson(_uiState.value.formState)
     }
 
     private fun loadExistingBiodata() {
