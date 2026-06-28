@@ -119,8 +119,9 @@ object AdManager {
         onAdFailedToLoad: (error: String) -> Unit = {}
     ) {
         val adRequest = AdRequest.Builder().build()
-        // Google's test Rewarded Ad Unit ID (safe for development/testing).
-        val adUnitId = "ca-app-pub-3940256099942544/5224354917"
+        // Set per build type via buildConfigField (test unit in debug; swap to the real unit for
+        // release — see app/build.gradle.kts).
+        val adUnitId = com.biodataai.app.BuildConfig.REWARDED_AD_UNIT_ID
 
         RewardedAd.load(
             context,

@@ -5,8 +5,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.biodataai.app.db.BioDataDatabase
 import com.biodataai.app.network.api.BiodataService
-import com.biodataai.app.network.api.UpdateBiodataRequest
+import com.biodataai.app.network.api.toUpdateRequest
+import com.biodataai.app.ui.viewmodel.FormState
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Instant
@@ -27,14 +29,19 @@ class BiodataSyncWorker(
                 val unsyncedBiodatas = database.biodataDao().getUnsyncedBiodatas(userId)
                 
                 for (biodata in unsyncedBiodatas) {
-                    val formDataJson = biodata.formDataJson ?: continue
-                    
+                    if (biodata.formDataJson == null) continue
+                    val formState = try {
+                        Gson().fromJson(biodata.formDataJson, FormState::class.java) ?: FormState()
+                    } catch (e: Exception) {
+                        FormState()
+                    }
+
                     try {
                         biodataService.updateBiodata(
                             biodata.id,
-                            UpdateBiodataRequest(formDataJson)
+                            formState.toUpdateRequest(title = biodata.title.ifBlank { null })
                         )
-                        
+
                         val updatedBiodata = biodata.copy(syncedAt = Instant.now())
                         database.biodataDao().updateBiodata(updatedBiodata)
                     } catch (e: Exception) {

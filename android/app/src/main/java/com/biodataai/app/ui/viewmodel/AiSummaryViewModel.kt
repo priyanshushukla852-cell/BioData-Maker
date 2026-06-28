@@ -22,7 +22,6 @@ data class AiSummaryUiState(
     val error: String? = null,
     val summary: String = "",
     val isManualEntry: Boolean = false,
-    val keywords: List<String> = emptyList(),
     // Daily AI cap reached (backend returned 429). When true the UI offers a rewarded ad.
     val quotaExceeded: Boolean = false,
     val adRewardAvailable: Boolean = false
@@ -57,24 +56,22 @@ class AiSummaryViewModel(
                     return@launch
                 }
 
-                val formDataJson = biodata.formDataJson ?: "{}"
-                val languagePref = "EN" // TODO: Get from user preference
-
+                // biodataId is shared with the server row; language comes from the draft.
                 val request = AiSummaryRequest(
-                    formDataJson = formDataJson,
-                    languagePref = languagePref
+                    biodataId = biodataId,
+                    language = biodata.language.name
                 )
 
-                // Call AI summary endpoint with 3-second timeout per CLAUDE.md
-                val result = withTimeoutOrNull(3000) {
+                // Summary generation can take longer than the 3s field-suggestion budget; allow
+                // more time here (the backend has its own retry + circuit breaker).
+                val result = withTimeoutOrNull(SUMMARY_TIMEOUT_MS) {
                     biodataService.generateAiSummary(request)
                 }
 
                 if (result != null) {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        summary = result.summary,
-                        keywords = result.keywords,
+                        summary = result.summaryText,
                         isManualEntry = false
                     )
                 } else {
@@ -155,5 +152,8 @@ class AiSummaryViewModel(
         // AdMob SSV is server-to-server and can land just after the ad is dismissed; wait briefly
         // before retrying so the backend has recorded the +1 grant.
         private const val SSV_GRANT_LANDING_DELAY_MS = 2000L
+
+        // Summary generation budget (field suggestions have the tighter 3s rule, not summaries).
+        private const val SUMMARY_TIMEOUT_MS = 20000L
     }
 }

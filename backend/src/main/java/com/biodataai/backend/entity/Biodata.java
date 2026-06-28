@@ -18,7 +18,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "biodatas")
@@ -29,8 +28,9 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 public class Biodata {
 
+    // Assigned by the service: the client-supplied UUID when present (offline-first id alignment),
+    // otherwise a server-generated one.
     @Id
-    @UuidGenerator
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

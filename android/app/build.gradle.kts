@@ -40,6 +40,9 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Production backend on Railway (HTTPS required — Android blocks cleartext by default).
             buildConfigField("String", "API_BASE_URL", "\"https://biodata-maker-production.up.railway.app/\"")
+            // TODO(prod): replace with the real AdMob rewarded ad unit id, and set
+            // ADMOB_REWARDED_AD_UNIT_ID on the backend so its SSV endpoint accepts the callbacks.
+            buildConfigField("String", "REWARDED_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/5224354917\"")
         }
         debug {
             // StrictMode (disk/network-on-main-thread detection) is enabled in BioDataApplication
@@ -48,6 +51,8 @@ android {
             // local server. To run against a local backend instead, use "http://10.0.2.2:8080/"
             // (emulator loopback) and add a cleartext network-security-config for that host.
             buildConfigField("String", "API_BASE_URL", "\"https://biodata-maker-production.up.railway.app/\"")
+            // Google's test rewarded ad unit (safe for development).
+            buildConfigField("String", "REWARDED_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/5224354917\"")
         }
     }
 

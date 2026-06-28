@@ -743,9 +743,6 @@ fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
                         Text("Write Your Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     } else {
                         Text("AI-Generated Summary", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        if (uiState.keywords.isNotEmpty()) {
-                            Text("Keywords: ${uiState.keywords.joinToString(", ")}", fontSize = 12.sp)
-                        }
                     }
                 }
 

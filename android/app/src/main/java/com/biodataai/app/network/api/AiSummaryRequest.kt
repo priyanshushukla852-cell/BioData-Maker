@@ -1,19 +1,18 @@
 package com.biodataai.app.network.api
 
 /**
- * Request to generate AI summary from form data
- * Sent to POST /api/ai/summary
+ * Request to generate an AI summary. Sent to POST /api/ai/summary.
+ * biodataId is the shared client/server UUID; language is "EN" or "HI".
  */
 data class AiSummaryRequest(
-    val formDataJson: String, // Serialized FormState
-    val languagePref: String // "EN" or "HI"
+    val biodataId: String,
+    val language: String
 )
 
 /**
- * AI-generated summary response
+ * AI-generated summary response from the backend.
  */
 data class AiSummaryResponse(
-    val summary: String,
-    val keywords: List<String>,
-    val generatedAt: String
+    val summaryText: String,
+    val generationId: String
 )

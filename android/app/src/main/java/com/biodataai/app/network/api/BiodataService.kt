@@ -8,8 +8,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 data class CreateBiodataRequest(
-    val templateId: String,
-    val languagePref: String // "EN" or "HI"
+    val id: String,            // client-generated UUID, shared with the server row
+    val title: String,
+    val templateId: String?,
+    val language: String       // "EN" or "HI"
 )
 
 data class BiodataResponse(

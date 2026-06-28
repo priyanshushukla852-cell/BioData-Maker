@@ -189,21 +189,10 @@ class FormStepViewModel(
     }
 
     private fun syncToBackend() {
-        viewModelScope.launch {
-            try {
-                val formState = _uiState.value.formState
-                val formJson = Gson().toJson(formState)
-
-                // Attempt backend sync (non-blocking, fire-and-forget)
-                val updateRequest = com.biodataai.app.network.api.UpdateBiodataRequest(
-                    formDataJson = formJson
-                )
-                // TODO: Wire backend sync with idempotency-key header
-                // biodataRepository.syncBiodata(biodataId, updateRequest)
-            } catch (e: Exception) {
-                // Log but don't block — offline is OK, sync will retry later via WorkManager
-            }
-        }
+        // Backend sync is performed by BiodataRepository.updateBiodata (invoked from
+        // saveCurrentStep), which maps the FormState into the backend's structured sections.
+        // Offline edits are retried later by BiodataSyncWorker. Kept as a no-op seam in case a
+        // step needs to trigger an out-of-band sync in future.
     }
 
     fun completeForm() {

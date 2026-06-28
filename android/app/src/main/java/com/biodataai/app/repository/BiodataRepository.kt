@@ -9,7 +9,9 @@ import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.network.RetrofitClient
 import com.biodataai.app.network.api.BiodataService
 import com.biodataai.app.network.api.CreateBiodataRequest
-import com.biodataai.app.network.api.UpdateBiodataRequest
+import com.biodataai.app.network.api.toUpdateRequest
+import com.biodataai.app.ui.viewmodel.FormState
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import java.util.UUID
@@ -46,10 +48,17 @@ class BiodataRepository(
             )
             biodataDao.insertBiodata(biodataEntity)
 
-            // Sync to backend (non-blocking — continue if offline or backend fails)
+            // Sync to backend (non-blocking — continue if offline or backend fails). The local id
+            // is sent so the server row shares it (offline-first id alignment), making the AI
+            // summary call resolvable by the same biodataId.
             try {
                 biodataService.createBiodata(
-                    CreateBiodataRequest(templateId, languagePref)
+                    CreateBiodataRequest(
+                        id = biodataEntity.id,
+                        title = biodataEntity.title,
+                        templateId = templateId,
+                        language = languagePref
+                    )
                 )
             } catch (e: Exception) {
                 // Offline or backend error — user can still work on local draft
@@ -84,11 +93,16 @@ class BiodataRepository(
     suspend fun updateBiodata(biodata: BiodataEntity): Result<Unit> {
         return try {
             biodataDao.updateBiodata(biodata)
-            // Sync update to backend (non-blocking)
+            // Sync update to backend (non-blocking). Parse the cached FormState blob and map it to
+            // the backend's structured sections so the server can build a properly-redacted AI
+            // prompt (income/caste/Manglik are stripped server-side per CLAUDE.md).
             try {
-                val request = UpdateBiodataRequest(
-                    formDataJson = biodata.formDataJson ?: "{}"
-                )
+                val formState = try {
+                    Gson().fromJson(biodata.formDataJson ?: "{}", FormState::class.java) ?: FormState()
+                } catch (e: Exception) {
+                    FormState()
+                }
+                val request = formState.toUpdateRequest(title = biodata.title.ifBlank { null })
                 biodataService.updateBiodata(biodata.id, request)
             } catch (e: Exception) {
                 // Offline or backend error — update will sync on next connectivity

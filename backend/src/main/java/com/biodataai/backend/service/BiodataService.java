@@ -32,6 +32,7 @@ import com.biodataai.backend.repository.PersonalDetailsRepository;
 import com.biodataai.backend.repository.TemplateRepository;
 import com.biodataai.backend.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,11 +76,29 @@ public class BiodataService {
 
     @Transactional
     public BiodataResponse create(UUID userId, BiodataCreateRequest request) {
+        // Idempotent on a client-supplied id: a retried offline sync returns the existing row
+        // rather than creating a duplicate.
+        if (request.id() != null) {
+            Optional<Biodata> existing = biodataRepository.findById(request.id());
+            if (existing.isPresent()) {
+                Biodata b = existing.get();
+                if (!b.getUser().getId().equals(userId)) {
+                    throw new ResourceNotFoundException("Biodata not found.");
+                }
+                return toResponse(b);
+            }
+        }
         User user = userRepository.getReferenceById(userId);
         Biodata biodata = new Biodata();
+        biodata.setId(request.id() != null ? request.id() : UUID.randomUUID());
         biodata.setUser(user);
-        biodata.setTitle(request.title());
+        biodata.setTitle(request.title() != null ? request.title() : "");
         biodata.setLanguage(request.language());
+        if (request.templateId() != null) {
+            Template template = templateRepository.findById(request.templateId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Template not found."));
+            biodata.setTemplate(template);
+        }
         Biodata saved = biodataRepository.save(biodata);
         return toResponse(saved);
     }
