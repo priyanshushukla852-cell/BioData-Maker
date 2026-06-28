@@ -12,7 +12,8 @@ data class PersonalDetailsForm(
     val gotra: String = "",
     val heightCm: String = "",
     val complexion: String = "",
-    val maritalStatus: String = "" // NEVER_MARRIED, DIVORCED, WIDOWED
+    val maritalStatus: String = "", // NEVER_MARRIED, DIVORCED, WIDOWED
+    val disability: String = ""
 )
 
 /**
@@ -26,7 +27,8 @@ data class FamilyDetailsForm(
     val siblingsCount: String = "",
     val siblingDetails: String = "",
     val familyStatus: String = "", // WELL_TO_DO, MIDDLE_CLASS, POOR
-    val familyType: String = "" // JOINT, NUCLEAR
+    val familyType: String = "", // JOINT, NUCLEAR
+    val familyValues: String = "" // e.g. Traditional, Moderate, Liberal
 )
 
 /**
@@ -39,7 +41,9 @@ data class EducationCareerForm(
     val companyName: String = "",
     val designation: String = "",
     val income: String = "", // Annual income (optional per CLAUDE.md)
-    val currency: String = "INR"
+    val currency: String = "INR",
+    val college: String = "",
+    val workLocation: String = ""
 )
 
 /**
@@ -62,7 +66,8 @@ data class AstrologyForm(
     val birthPlace: String = "",
     val sunSign: String = "",
     val moonSign: String = "",
-    val isManglik: String = "" // YES, NO, UNKNOWN (optional per CLAUDE.md)
+    val isManglik: String = "", // YES, NO, UNKNOWN (optional per CLAUDE.md)
+    val nakshatra: String = ""
 )
 
 /**

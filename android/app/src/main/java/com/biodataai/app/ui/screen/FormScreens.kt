@@ -320,6 +320,7 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
     var gender by remember { mutableStateOf(uiState.formState.step1.gender) }
     var religion by remember { mutableStateOf(uiState.formState.step1.religion) }
     var heightCm by remember { mutableStateOf(uiState.formState.step1.heightCm) }
+    var disability by remember { mutableStateOf(uiState.formState.step1.disability) }
 
     LazyColumn(
         modifier = Modifier
@@ -395,6 +396,17 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
                 keyboardType = KeyboardType.Number
             )
         }
+        item {
+            FormTextField(
+                value = disability,
+                onValueChange = {
+                    disability = it
+                    viewModel.updateStep1(uiState.formState.step1.copy(disability = it))
+                },
+                label = "Disability (if any)",
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -403,6 +415,7 @@ private fun FormStep2FamilyDetails(viewModel: FormStepViewModel, uiState: com.bi
     var fatherName by remember { mutableStateOf(uiState.formState.step2.fatherName) }
     var motherName by remember { mutableStateOf(uiState.formState.step2.motherName) }
     var siblingsCount by remember { mutableStateOf(uiState.formState.step2.siblingsCount) }
+    var familyValues by remember { mutableStateOf(uiState.formState.step2.familyValues) }
 
     LazyColumn(
         modifier = Modifier
@@ -413,6 +426,7 @@ private fun FormStep2FamilyDetails(viewModel: FormStepViewModel, uiState: com.bi
         item { FormTextField(value = fatherName, onValueChange = { fatherName = it; viewModel.updateStep2(uiState.formState.step2.copy(fatherName = it)) }, label = "Father's Name", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = motherName, onValueChange = { motherName = it; viewModel.updateStep2(uiState.formState.step2.copy(motherName = it)) }, label = "Mother's Name", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = siblingsCount, onValueChange = { siblingsCount = it; viewModel.updateStep2(uiState.formState.step2.copy(siblingsCount = it)) }, label = "Number of Siblings", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Number) }
+        item { FormTextField(value = familyValues, onValueChange = { familyValues = it; viewModel.updateStep2(uiState.formState.step2.copy(familyValues = it)) }, label = "Family Values (e.g. Traditional, Moderate)", modifier = Modifier.fillMaxWidth()) }
     }
 }
 
@@ -421,6 +435,8 @@ private fun FormStep3EducationCareer(viewModel: FormStepViewModel, uiState: com.
     var education by remember { mutableStateOf(uiState.formState.step3.educationLevel) }
     var occupation by remember { mutableStateOf(uiState.formState.step3.occupation) }
     var income by remember { mutableStateOf(uiState.formState.step3.income) }
+    var college by remember { mutableStateOf(uiState.formState.step3.college) }
+    var workLocation by remember { mutableStateOf(uiState.formState.step3.workLocation) }
 
     LazyColumn(
         modifier = Modifier
@@ -430,6 +446,8 @@ private fun FormStep3EducationCareer(viewModel: FormStepViewModel, uiState: com.
     ) {
         item { FormTextField(value = education, onValueChange = { education = it; viewModel.updateStep3(uiState.formState.step3.copy(educationLevel = it)) }, label = "Education Level", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = occupation, onValueChange = { occupation = it; viewModel.updateStep3(uiState.formState.step3.copy(occupation = it)) }, label = "Occupation", modifier = Modifier.fillMaxWidth()) }
+        item { FormTextField(value = college, onValueChange = { college = it; viewModel.updateStep3(uiState.formState.step3.copy(college = it)) }, label = "College / University", modifier = Modifier.fillMaxWidth()) }
+        item { FormTextField(value = workLocation, onValueChange = { workLocation = it; viewModel.updateStep3(uiState.formState.step3.copy(workLocation = it)) }, label = "Work Location", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = income, onValueChange = { income = it; viewModel.updateStep3(uiState.formState.step3.copy(income = it)) }, label = "Annual Income (Optional)", modifier = Modifier.fillMaxWidth(), keyboardType = KeyboardType.Number) }
     }
 }
@@ -454,6 +472,7 @@ private fun FormStep4Lifestyle(viewModel: FormStepViewModel, uiState: com.biodat
 private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var birthPlace by remember { mutableStateOf(uiState.formState.step5.birthPlace) }
     var isManglik by remember { mutableStateOf(uiState.formState.step5.isManglik) }
+    var nakshatra by remember { mutableStateOf(uiState.formState.step5.nakshatra) }
 
     LazyColumn(
         modifier = Modifier
@@ -463,6 +482,7 @@ private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodat
     ) {
         item { Text("Astrology (Optional)", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
         item { FormTextField(value = birthPlace, onValueChange = { birthPlace = it; viewModel.updateStep5(uiState.formState.step5.copy(birthPlace = it)) }, label = "Birth Place", modifier = Modifier.fillMaxWidth()) }
+        item { FormTextField(value = nakshatra, onValueChange = { nakshatra = it; viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it)) }, label = "Nakshatra (Optional)", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = isManglik, onValueChange = { isManglik = it; viewModel.updateStep5(uiState.formState.step5.copy(isManglik = it)) }, label = "Manglik Status (Optional)", modifier = Modifier.fillMaxWidth()) }
     }
 }

@@ -100,7 +100,7 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         gotra = p.gotra.orNull(),
         heightCm = p.heightCm.orNull()?.toIntOrNull(),
         complexion = p.complexion.orNull(),
-        disability = null,
+        disability = p.disability.orNull(),
         maritalStatus = p.maritalStatus.orNull()
     )
 
@@ -111,7 +111,7 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         motherOccupation = f.motherOccupation.orNull(),
         siblings = f.siblingDetails.orNull() ?: f.siblingsCount.orNull(),
         familyType = f.familyType.orNull(),
-        familyValues = null,
+        familyValues = f.familyValues.orNull(),
         familyStatus = f.familyStatus.orNull()
     )
 
@@ -120,11 +120,11 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
     }
     val education = EducationCareerDto(
         highestQualification = e.educationLevel.orNull(),
-        college = null,
+        college = e.college.orNull(),
         jobTitle = e.designation.orNull() ?: e.occupation.orNull(),
         company = e.companyName.orNull(),
         annualIncome = annualIncome,
-        workLocation = null,
+        workLocation = e.workLocation.orNull(),
         educationField = e.educationField.orNull()
     )
 
@@ -143,7 +143,7 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
 
     val astrology = AstrologyDto(
         rashi = a.moonSign.orNull(),
-        nakshatra = null,
+        nakshatra = a.nakshatra.orNull(),
         manglik = when (a.isManglik.trim().uppercase()) {
             "YES" -> "YES"
             "NO" -> "NO"
