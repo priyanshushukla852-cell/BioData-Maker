@@ -23,7 +23,6 @@ import java.util.UUID
 data class FormStepUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val currentStep: Int = 1,
     val formState: FormState = FormState(),
     val isSaving: Boolean = false
 )
@@ -138,22 +137,6 @@ class FormStepViewModel(
         _uiState.value = _uiState.value.copy(
             formState = _uiState.value.formState.copy(step7 = step7)
         )
-    }
-
-    fun nextStep() {
-        val currentStep = _uiState.value.currentStep
-        if (currentStep < 7) {
-            saveCurrentStep()
-            _uiState.value = _uiState.value.copy(currentStep = currentStep + 1)
-        }
-    }
-
-    fun previousStep() {
-        val currentStep = _uiState.value.currentStep
-        if (currentStep > 1) {
-            saveCurrentStep()
-            _uiState.value = _uiState.value.copy(currentStep = currentStep - 1)
-        }
     }
 
     fun saveCurrentStep() {

@@ -44,24 +44,22 @@ class AiSummaryViewModelTest {
     }
 
     @Test
-    fun testKeywordsParsing() {
-        val keywords = listOf("marriage", "engineer", "vegetarian", "hinduism")
+    fun testQuotaExceededState() {
         val state = AiSummaryUiState(
-            summary = "AI generated summary",
-            keywords = keywords
+            quotaExceeded = true,
+            adRewardAvailable = true
         )
-        assertEquals(4, state.keywords.size)
-        assertEquals("marriage", state.keywords[0])
+        assertTrue(state.quotaExceeded)
+        assertTrue(state.adRewardAvailable)
     }
 
     @Test
     fun testAiSummaryResponse() {
         val response = com.biodataai.app.network.api.AiSummaryResponse(
-            summary = "Professional engineer from a well-to-do family",
-            keywords = listOf("engineer", "professional", "educated"),
-            generatedAt = "2026-06-27T10:30:00Z"
+            summaryText = "Professional engineer from a well-to-do family",
+            generationId = "11111111-1111-1111-1111-111111111111"
         )
-        assertEquals("Professional engineer from a well-to-do family", response.summary)
-        assertEquals(3, response.keywords.size)
+        assertEquals("Professional engineer from a well-to-do family", response.summaryText)
+        assertEquals("11111111-1111-1111-1111-111111111111", response.generationId)
     }
 }

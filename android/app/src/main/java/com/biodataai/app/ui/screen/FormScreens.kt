@@ -281,7 +281,10 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(
-                    onClick = { viewModel.previousStep() },
+                    onClick = {
+                        viewModel.saveCurrentStep()
+                        navController.popBackStack()
+                    },
                     modifier = Modifier.weight(1f),
                     enabled = step > 1 && !uiState.isSaving
                 ) {
@@ -296,7 +299,8 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                                 popUpTo(NavRoute.FormStep(biodataId, 1)) { inclusive = true }
                             }
                         } else {
-                            viewModel.nextStep()
+                            viewModel.saveCurrentStep()
+                            navController.navigate(NavRoute.FormStep(biodataId, step + 1))
                         }
                     },
                     modifier = Modifier.weight(1f),
