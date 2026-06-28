@@ -125,6 +125,13 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
 
+    // Google Sign-In via Credential Manager (modern replacement for the deprecated
+    // GoogleSignInClient). Produces a Google ID token that AuthRepository exchanges for a
+    // Firebase credential.
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
     // Google Mobile Ads (AdMob for interstitial ads at PDF export)
     implementation("com.google.android.gms:play-services-ads:23.2.0")
 

@@ -28,19 +28,20 @@ public class ContactInfo {
     @JoinColumn(name = "biodata_id", nullable = false, unique = true)
     private Biodata biodata;
 
-    @Column(name = "contact_phone", nullable = false, length = 15)
+    // Nullable: drafts sync partially; completeness enforced at export (see V6 migration).
+    @Column(name = "contact_phone", length = 15)
     private String contactPhone;
 
     @Column(name = "contact_email", length = 255)
     private String contactEmail;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String city;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String state;
 
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String country;
 
     @Column(columnDefinition = "TEXT")

@@ -28,7 +28,8 @@ public class EducationCareer {
     @JoinColumn(name = "biodata_id", nullable = false, unique = true)
     private Biodata biodata;
 
-    @Column(name = "highest_qualification", nullable = false, length = 100)
+    // Nullable: drafts sync partially; completeness enforced at export (see V6 migration).
+    @Column(name = "highest_qualification", length = 100)
     private String highestQualification;
 
     @Column(length = 200)

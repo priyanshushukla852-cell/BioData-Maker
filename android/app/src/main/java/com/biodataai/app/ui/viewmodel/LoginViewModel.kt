@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 data class LoginUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val googleSignInInitiated: Boolean = false,
     val phoneOtpFlow: PhoneOtpFlow? = null
 )
 
@@ -35,10 +34,6 @@ class LoginViewModel(
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
-
-    fun startGoogleSignIn() {
-        _uiState.value = _uiState.value.copy(googleSignInInitiated = true)
-    }
 
     fun signInWithGoogle(idToken: String) {
         launchAsync {

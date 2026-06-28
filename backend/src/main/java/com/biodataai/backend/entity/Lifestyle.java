@@ -30,8 +30,9 @@ public class Lifestyle {
     @JoinColumn(name = "biodata_id", nullable = false, unique = true)
     private Biodata biodata;
 
+    // Nullable: drafts sync partially; completeness enforced at export (see V6 migration).
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(length = 10)
     private Diet diet;
 
     @Enumerated(EnumType.STRING)

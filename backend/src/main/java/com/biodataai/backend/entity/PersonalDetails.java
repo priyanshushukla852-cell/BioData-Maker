@@ -31,14 +31,15 @@ public class PersonalDetails {
     @JoinColumn(name = "biodata_id", nullable = false, unique = true)
     private Biodata biodata;
 
-    @Column(name = "full_name", nullable = false, length = 100)
+    // Nullable: drafts sync partially; completeness enforced at export (see V6 migration).
+    @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate dob;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(length = 10)
     private Gender gender;
 
     @Column(length = 50)
