@@ -18,9 +18,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedButton
@@ -364,6 +368,61 @@ private fun FormSingleChoice(
     }
 }
 
+/**
+ * Editable, searchable dropdown for medium-sized lists (e.g. religion). The text field accepts
+ * free input — what the user types is the value, so custom entries are allowed — while typing
+ * filters [options] (case-insensitive substring) into a shortlist they can tap to fill in.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FormSearchableDropdown(
+    label: String,
+    value: String,
+    options: List<String>,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val filtered = if (value.isBlank()) {
+        options
+    } else {
+        options.filter { it.contains(value.trim(), ignoreCase = true) }
+    }
+    ExposedDropdownMenuBox(
+        expanded = expanded && filtered.isNotEmpty(),
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+                expanded = true
+            },
+            label = { Text(label) },
+            singleLine = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryEditable)
+        )
+        ExposedDropdownMenu(
+            expanded = expanded && filtered.isNotEmpty(),
+            onDismissRequest = { expanded = false }
+        ) {
+            filtered.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onValueChange(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var fullName by remember { mutableStateOf(uiState.formState.step1.fullName) }
@@ -438,13 +497,17 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
             )
         }
         item {
-            FormTextField(
+            FormSearchableDropdown(
+                label = "Religion",
                 value = religion,
+                // Hindu first (most common in this app's audience); free text still allowed.
+                options = listOf(
+                    "Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Parsi", "Jewish", "Other"
+                ),
                 onValueChange = {
                     religion = it
                     viewModel.updateStep1(uiState.formState.step1.copy(religion = it))
                 },
-                label = "Religion",
                 modifier = Modifier.fillMaxWidth()
             )
         }
