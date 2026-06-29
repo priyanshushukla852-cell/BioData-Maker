@@ -43,6 +43,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.biodataai.app.db.BioDataDatabase
+import com.biodataai.app.db.entity.BiodataStatus
 import com.biodataai.app.navigation.NavRoute
 import com.biodataai.app.ui.component.OfflineStateBanner
 import com.biodataai.app.ui.viewmodel.HomeViewModel
@@ -153,9 +154,18 @@ fun HomeScreen(navController: NavController) {
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)
                                     .clickable {
-                                        navController.navigate(
-                                            NavRoute.BiodataPreview(biodata.id, "classic")
-                                        )
+                                        // Drafts reopen in the editable form (loads saved data);
+                                        // completed biodatas open the read-only preview.
+                                        if (biodata.status == BiodataStatus.DRAFT) {
+                                            navController.navigate(NavRoute.FormStep(biodata.id, 1))
+                                        } else {
+                                            navController.navigate(
+                                                NavRoute.BiodataPreview(
+                                                    biodata.id,
+                                                    biodata.templateId ?: "classic"
+                                                )
+                                            )
+                                        }
                                     }
                             ) {
                                 Column(
