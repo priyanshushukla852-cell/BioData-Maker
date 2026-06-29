@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -267,6 +268,9 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                // Inset the content by the keyboard height so the focused field isn't hidden;
+                // the step's LazyColumn then auto-scrolls the focused field into the smaller viewport.
+                .imePadding()
         ) {
             LinearProgressIndicator(
                 progress = { step.toFloat() / 7f },
@@ -606,7 +610,7 @@ private fun FormStep4Lifestyle(viewModel: FormStepViewModel, uiState: com.biodat
                 onSelect = { diet = it; viewModel.updateStep4(uiState.formState.step4.copy(diet = it)) }
             )
         }
-        item { FormTextField(value = hobbies, onValueChange = { hobbies = it; viewModel.updateStep4(uiState.formState.step4.copy(hobbies = it)) }, label = "Hobbies & Interests", modifier = Modifier.fillMaxWidth()) }
+        item { FormTextField(value = hobbies, onValueChange = { hobbies = it; viewModel.updateStep4(uiState.formState.step4.copy(hobbies = it)) }, label = "Hobbies & Interests", placeholder = "What to highlight in your summary", modifier = Modifier.fillMaxWidth()) }
     }
 }
 

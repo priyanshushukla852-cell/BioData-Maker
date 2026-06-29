@@ -129,6 +129,9 @@ public class GeminiProxyService {
                 Write a warm, respectful personal introduction paragraph in %s suitable for an
                 Indian arranged marriage biodata. Keep it 4-6 sentences. Mention their family
                 background, education, career, and personality briefly.
+                Use simple, everyday language that anyone can easily understand. Avoid difficult,
+                formal, or flowery words. For Hindi, use common conversational Hindi, not heavy
+                Sanskritised words.
                 Do NOT include income, caste, or Manglik status in the summary.
                 """
                 .formatted(name, toJson(redactForAi(biodata)), languageName);

@@ -19,12 +19,14 @@ fun FormTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     enabled: Boolean = true,
     isError: Boolean = false,
-    supportingText: String? = null
+    supportingText: String? = null,
+    placeholder: String? = null
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
+        placeholder = placeholder?.let { { Text(it) } },
         modifier = modifier,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         enabled = enabled,
