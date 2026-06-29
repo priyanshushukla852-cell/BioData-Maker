@@ -69,4 +69,16 @@ class InputValidationTest {
         assertEquals("15-08-1990", InputValidation.isoToDobDisplay("1990-08-15"))
         assertEquals("", InputValidation.isoToDobDisplay("")) // empty stays empty
     }
+
+    @Test
+    fun caret_lands_after_the_dash_so_typing_continues_in_next_segment() {
+        // Two day digits -> caret jumps past the auto-inserted dash into the month segment.
+        assertEquals(3, InputValidation.dobCaretForDigitCount("15-", 2))
+        // The bug case: "11-1" then typing "0" -> "11-10"; caret must sit at the end (after 4
+        // digits), not be shoved left by the earlier dash.
+        assertEquals(5, InputValidation.dobCaretForDigitCount("11-10", 4))
+        // Past the second dash, into the year.
+        assertEquals(6, InputValidation.dobCaretForDigitCount("11-10-", 4))
+        assertEquals(0, InputValidation.dobCaretForDigitCount("15-", 0))
+    }
 }

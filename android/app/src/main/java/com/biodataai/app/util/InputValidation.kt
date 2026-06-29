@@ -42,6 +42,28 @@ object InputValidation {
     }
 
     /**
+     * Caret position (in [formatted]) that sits just after the [digitCount]-th digit, skipping any
+     * dash that immediately follows so the next keystroke lands in the next segment. Used to keep
+     * the cursor stable after auto-inserting dashes — counting digits, not raw offsets, is what
+     * survives the reformat (otherwise the caret jumps when a '-' is injected).
+     */
+    fun dobCaretForDigitCount(formatted: String, digitCount: Int): Int {
+        if (digitCount <= 0) return 0
+        var seen = 0
+        for (idx in formatted.indices) {
+            if (formatted[idx].isDigit()) {
+                seen++
+                if (seen == digitCount) {
+                    var pos = idx + 1
+                    if (pos < formatted.length && formatted[pos] == '-') pos++
+                    return pos
+                }
+            }
+        }
+        return formatted.length
+    }
+
+    /**
      * DD-MM-YYYY (single-digit day/month allowed, e.g. "4-5-1990") -> ISO yyyy-MM-dd, or null if it
      * is not yet a complete, real calendar date.
      */

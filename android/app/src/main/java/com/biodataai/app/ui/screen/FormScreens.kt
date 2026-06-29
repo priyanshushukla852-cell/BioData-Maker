@@ -38,8 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.createSavedStateHandle
@@ -333,7 +336,15 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
 private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var fullName by remember { mutableStateOf(uiState.formState.step1.fullName) }
     // Field shows DD-MM-YYYY (user-friendly); FormState keeps ISO yyyy-MM-dd (or "" while partial).
-    var dobDisplay by remember { mutableStateOf(InputValidation.isoToDobDisplay(uiState.formState.step1.dob)) }
+    // Held as TextFieldValue so the caret can be repositioned after auto-inserting dashes — a plain
+    // String field can't track the caret across the reformat, making it jump left mid-typing.
+    var dobField by remember {
+        mutableStateOf(
+            InputValidation.isoToDobDisplay(uiState.formState.step1.dob).let {
+                TextFieldValue(it, TextRange(it.length))
+            }
+        )
+    }
     var gender by remember { mutableStateOf(uiState.formState.step1.gender) }
     var religion by remember { mutableStateOf(uiState.formState.step1.religion) }
     var heightCm by remember { mutableStateOf(uiState.formState.step1.heightCm) }
@@ -357,24 +368,32 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
             )
         }
         item {
-            val dobError = dobDisplay.isNotBlank() && InputValidation.dobDisplayToIso(dobDisplay) == null
-            FormTextField(
-                value = dobDisplay,
+            val dobError = dobField.text.isNotBlank() &&
+                InputValidation.dobDisplayToIso(dobField.text) == null
+            OutlinedTextField(
+                value = dobField,
                 onValueChange = { input ->
                     // Auto-insert dashes as the user types; skip the trailing dash on deletion so
                     // backspace isn't blocked by a just-completed segment's separator.
-                    val deleting = input.length < dobDisplay.length
-                    val formatted = InputValidation.formatDobInput(input, allowTrailingDash = !deleting)
-                    dobDisplay = formatted
+                    val deleting = input.text.length < dobField.text.length
+                    val formatted = InputValidation.formatDobInput(input.text, allowTrailingDash = !deleting)
+                    // Keep the caret after the same number of digits the user had typed before it,
+                    // so an injected '-' doesn't shove the cursor (and following digits) left.
+                    val digitsBeforeCaret = input.text.take(input.selection.end).count(Char::isDigit)
+                    val caret = InputValidation.dobCaretForDigitCount(formatted, digitsBeforeCaret)
+                    dobField = TextFieldValue(formatted, TextRange(caret))
                     // Persist ISO only once it's a complete valid date; partial input stays "".
                     val iso = InputValidation.dobDisplayToIso(formatted)
                     viewModel.updateStep1(uiState.formState.step1.copy(dob = iso ?: ""))
                 },
-                label = "Date of Birth (DD-MM-YYYY) *",
+                label = { Text("Date of Birth (DD-MM-YYYY) *") },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardType = KeyboardType.Number,
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = dobError,
-                supportingText = if (dobError) stringResource(R.string.invalid_date_format) else null
+                supportingText = if (dobError) {
+                    { Text(stringResource(R.string.invalid_date_format)) }
+                } else null
             )
         }
         item {
