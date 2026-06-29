@@ -634,7 +634,24 @@ private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodat
                 Text(if (birthTime.isBlank()) "Select Birth Time (Optional)" else "Birth Time: $birthTime")
             }
         }
-        item { FormTextField(value = nakshatra, onValueChange = { nakshatra = it; viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it)) }, label = "Nakshatra (Optional)", modifier = Modifier.fillMaxWidth()) }
+        item {
+            FormSearchableDropdown(
+                label = "Nakshatra (Optional)",
+                value = nakshatra,
+                options = listOf(
+                    "Anuradha", "Ardra", "Ashlesha", "Ashwini", "Bharani", "Chitra", "Dhanishta",
+                    "Hasta", "Jyeshtha", "Krittika", "Magha", "Mrigashira", "Mula", "Punarvasu",
+                    "Purva Ashadha", "Purva Bhadrapada", "Purva Phalguni", "Pushya", "Revati",
+                    "Rohini", "Shatabhisha", "Shravana", "Swati", "Uttara Ashadha",
+                    "Uttara Bhadrapada", "Uttara Phalguni", "Vishakha"
+                ),
+                onValueChange = {
+                    nakshatra = it
+                    viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         item {
             FormSingleChoice(
                 label = "Manglik Status (Optional)",
