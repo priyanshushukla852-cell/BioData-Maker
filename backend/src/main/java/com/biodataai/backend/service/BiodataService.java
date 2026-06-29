@@ -31,6 +31,8 @@ import com.biodataai.backend.repository.LifestyleRepository;
 import com.biodataai.backend.repository.PersonalDetailsRepository;
 import com.biodataai.backend.repository.TemplateRepository;
 import com.biodataai.backend.repository.UserRepository;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -268,10 +270,22 @@ public class BiodataService {
         entity.setRashi(dto.rashi());
         entity.setNakshatra(dto.nakshatra());
         entity.setManglik(dto.manglik());
-        entity.setBirthTime(dto.birthTime());
+        entity.setBirthTime(parseLocalTimeOrNull(dto.birthTime()));
         entity.setBirthPlace(dto.birthPlace());
         entity.setSunSign(dto.sunSign());
         astrologyRepository.save(entity);
+    }
+
+    /** Lenient HH:mm[:ss] parse: returns null for blank/malformed input instead of throwing. */
+    private LocalTime parseLocalTimeOrNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalTime.parse(value.trim());
+        } catch (DateTimeParseException e) {
+            return null;
+        }
     }
 
     private void upsertContactInfo(Biodata biodata, ContactInfoDto dto) {
@@ -324,8 +338,9 @@ public class BiodataService {
         AstrologyDto astrology = astrologyRepository
                 .findByBiodataId(biodata.getId())
                 .map(a -> new AstrologyDto(
-                        a.getRashi(), a.getNakshatra(), a.getManglik(), a.getBirthTime(), a.getBirthPlace(),
-                        a.getSunSign()))
+                        a.getRashi(), a.getNakshatra(), a.getManglik(),
+                        a.getBirthTime() != null ? a.getBirthTime().toString() : null,
+                        a.getBirthPlace(), a.getSunSign()))
                 .orElse(null);
 
         ContactInfoDto contactInfo = contactInfoRepository

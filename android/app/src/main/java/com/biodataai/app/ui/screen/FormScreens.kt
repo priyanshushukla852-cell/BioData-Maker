@@ -27,7 +27,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -524,12 +527,14 @@ private fun FormStep4Lifestyle(viewModel: FormStepViewModel, uiState: com.biodat
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var birthPlace by remember { mutableStateOf(uiState.formState.step5.birthPlace) }
     var birthTime by remember { mutableStateOf(uiState.formState.step5.birthTime) }
     var isManglik by remember { mutableStateOf(uiState.formState.step5.isManglik) }
     var nakshatra by remember { mutableStateOf(uiState.formState.step5.nakshatra) }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier
@@ -539,9 +544,44 @@ private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodat
     ) {
         item { Text("Astrology (Optional)", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
         item { FormTextField(value = birthPlace, onValueChange = { birthPlace = it; viewModel.updateStep5(uiState.formState.step5.copy(birthPlace = it)) }, label = "Birth Place", modifier = Modifier.fillMaxWidth()) }
-        item { FormTextField(value = birthTime, onValueChange = { birthTime = it; viewModel.updateStep5(uiState.formState.step5.copy(birthTime = it)) }, label = "Birth Time (HH:MM, e.g. 14:30)", modifier = Modifier.fillMaxWidth()) }
+        item {
+            // A picker (not free text) so the value is always a valid HH:mm — the backend parses
+            // it as a time, and a malformed string would otherwise fail the whole sync.
+            OutlinedButton(onClick = { showTimePicker = true }, modifier = Modifier.fillMaxWidth()) {
+                Text(if (birthTime.isBlank()) "Select Birth Time (Optional)" else "Birth Time: $birthTime")
+            }
+        }
         item { FormTextField(value = nakshatra, onValueChange = { nakshatra = it; viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it)) }, label = "Nakshatra (Optional)", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = isManglik, onValueChange = { isManglik = it; viewModel.updateStep5(uiState.formState.step5.copy(isManglik = it)) }, label = "Manglik Status (Optional)", modifier = Modifier.fillMaxWidth()) }
+    }
+
+    if (showTimePicker) {
+        // Seed from any existing HH:mm value; fall back to noon.
+        val parts = birthTime.split(":")
+        val initialHour = parts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 12
+        val initialMinute = parts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
+        val timeState = rememberTimePickerState(
+            initialHour = initialHour,
+            initialMinute = initialMinute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val value = "%02d:%02d".format(timeState.hour, timeState.minute)
+                    birthTime = value
+                    viewModel.updateStep5(uiState.formState.step5.copy(birthTime = value))
+                    showTimePicker = false
+                }) { Text(stringResource(android.R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.cancel_button))
+                }
+            },
+            text = { TimePicker(state = timeState) }
+        )
     }
 }
 
