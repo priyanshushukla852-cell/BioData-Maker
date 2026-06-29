@@ -63,6 +63,7 @@ import com.biodataai.app.ui.viewmodel.PersonalDetailsForm
 import com.biodataai.app.ui.viewmodel.PhotosForm
 import com.google.firebase.auth.FirebaseAuth
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -73,9 +74,6 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import com.biodataai.app.R
-import android.Manifest
-import androidx.core.content.ContextCompat
-import android.content.pm.PackageManager
 import java.io.File
 
 // Template options available to users
@@ -565,8 +563,10 @@ private fun FormStep7Photos(viewModel: FormStepViewModel, uiState: com.biodataai
     var compressionError by remember { mutableStateOf<String?>(null) }
     var photoToDelete by remember { mutableStateOf<String?>(null) }
 
+    // Android Photo Picker: needs no storage permission on any API level (READ_EXTERNAL_STORAGE
+    // is denied outright on Android 13+, which is what caused the "permission denied" error).
     val photoLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
+        ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri != null) {
             isCompressing = true
@@ -590,16 +590,6 @@ private fun FormStep7Photos(viewModel: FormStepViewModel, uiState: com.biodataai
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            photoLauncher.launch("image/*")
-        } else {
-            compressionError = "Photo permission denied. Cannot access gallery."
-        }
-    }
-
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -614,12 +604,9 @@ private fun FormStep7Photos(viewModel: FormStepViewModel, uiState: com.biodataai
         item {
             Button(
                 onClick = {
-                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-                        photoLauncher.launch("image/*")
-                    } else {
-                        permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    }
+                    photoLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isCompressing && uiState.formState.step7.photoUrls.size < 5
