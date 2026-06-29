@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biodataai.app.core.Result
 import com.biodataai.app.db.BioDataDatabase
+import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.network.RetrofitClient
 import com.biodataai.app.network.api.AiSummaryRequest
 import com.biodataai.app.network.api.BiodataService
@@ -150,6 +151,23 @@ class AiSummaryViewModel(
 
     fun updateSummary(newSummary: String) {
         _uiState.value = _uiState.value.copy(summary = newSummary)
+    }
+
+    /**
+     * Persist the current summary into the slot for this biodata's language, then continue. Without
+     * this the edited/generated summary was lost on navigation and never reached the PDF.
+     */
+    fun saveSummaryAndContinue(onSaved: () -> Unit) {
+        viewModelScope.launch {
+            val biodata = database.biodataDao().getBiodataById(biodataId)
+            if (biodata != null) {
+                val text = _uiState.value.summary
+                val en = if (biodata.language == LanguagePref.EN) text else biodata.summaryEn
+                val hi = if (biodata.language == LanguagePref.HI) text else biodata.summaryHi
+                database.biodataDao().updateSummaries(biodataId, en, hi)
+            }
+            onSaved()
+        }
     }
 
     fun skipAiAndWriteManually() {

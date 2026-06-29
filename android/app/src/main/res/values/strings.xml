@@ -19,6 +19,9 @@
     <string name="choose_template">Choose Template</string>
     <string name="preview">Preview</string>
     <string name="export_pdf">Export PDF</string>
+    <string name="preview_language">Preview language</string>
+    <string name="export_language">Export language</string>
+    <string name="export_both_credits_note">Exporting both languages uses 2 AI credits.</string>
     <string name="back">Back</string>
     <string name="next">Next</string>
     <string name="complete">Complete</string>

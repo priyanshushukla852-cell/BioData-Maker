@@ -35,6 +35,10 @@ data class BiodataEntity(
     val status: BiodataStatus = BiodataStatus.DRAFT,
     val templateId: String? = null,
     val formDataJson: String? = null, // JSON serialization of FormState (offline draft cache)
+    // AI/manual "About" summary cached per language so a biodata can be exported in EN and/or HI
+    // without regenerating (each generation costs one AI credit). Null until generated.
+    val summaryEn: String? = null,
+    val summaryHi: String? = null,
     val syncedAt: Instant? = null, // Last successful backend sync
     val createdAt: Instant,
     val updatedAt: Instant,

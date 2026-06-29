@@ -31,7 +31,7 @@ import com.biodataai.app.db.converter.InstantConverter
         ContactInfoEntity::class,
         BiodataPhotoEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(InstantConverter::class)
@@ -61,13 +61,21 @@ abstract class BioDataDatabase : RoomDatabase() {
             }
         }
 
+        /** v2 -> v3: per-language cached "About" summaries for multi-language export. */
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `biodatas` ADD COLUMN `summaryEn` TEXT")
+                db.execSQL("ALTER TABLE `biodatas` ADD COLUMN `summaryHi` TEXT")
+            }
+        }
+
         fun getInstance(context: Context): BioDataDatabase {
             return instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
                     context.applicationContext,
                     BioDataDatabase::class.java,
                     "biodata.db"
-                ).addMigrations(MIGRATION_1_2).build().also { instance = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { instance = it }
             }
         }
     }

@@ -19,6 +19,9 @@
     <string name="choose_template">टेम्पलेट चुनें</string>
     <string name="preview">पूर्वावलोकन</string>
     <string name="export_pdf">PDF निर्यात करें</string>
+    <string name="preview_language">पूर्वावलोकन भाषा</string>
+    <string name="export_language">निर्यात भाषा</string>
+    <string name="export_both_credits_note">दोनों भाषाओं में निर्यात करने पर 2 AI क्रेडिट लगेंगे।</string>
     <string name="back">वापस</string>
     <string name="next">आगे</string>
     <string name="complete">पूर्ण करें</string>

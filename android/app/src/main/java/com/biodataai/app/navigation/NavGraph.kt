@@ -68,15 +68,17 @@ fun BioDataNavGraph(
 
         composable<NavRoute.BiodataPreview> { backStackEntry ->
             val biodataId = backStackEntry.arguments?.getString("biodataId")
+            val templateId = backStackEntry.arguments?.getString("templateId") ?: "classic"
             if (biodataId != null) {
-                BiodataPreviewScreen(navController, biodataId)
+                BiodataPreviewScreen(navController, biodataId, templateId)
             }
         }
 
         composable<NavRoute.PdfExport> { backStackEntry ->
             val biodataId = backStackEntry.arguments?.getString("biodataId")
+            val templateId = backStackEntry.arguments?.getString("templateId") ?: "classic"
             if (biodataId != null) {
-                PdfExportScreen(navController, biodataId)
+                PdfExportScreen(navController, biodataId, templateId)
             }
         }
     }

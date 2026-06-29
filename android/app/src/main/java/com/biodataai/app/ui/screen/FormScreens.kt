@@ -62,6 +62,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
 import com.biodataai.app.db.BioDataDatabase
+import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.navigation.NavRoute
 import com.biodataai.app.ui.component.FormTextField
 import com.biodataai.app.ui.viewmodel.BiodataCreateViewModel
@@ -1009,8 +1010,10 @@ fun AiSummaryReviewScreen(navController: NavController, biodataId: String) {
 
                         Button(
                             onClick = {
-                                navController.navigate(NavRoute.TemplatePicker(biodataId)) {
-                                    popUpTo(NavRoute.AiSummaryReview(biodataId)) { inclusive = true }
+                                viewModel.saveSummaryAndContinue {
+                                    navController.navigate(NavRoute.TemplatePicker(biodataId)) {
+                                        popUpTo(NavRoute.AiSummaryReview(biodataId)) { inclusive = true }
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f),
@@ -1135,12 +1138,12 @@ fun TemplatePickerScreen(navController: NavController, biodataId: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiodataPreviewScreen(navController: NavController, biodataId: String, templateId: String = "classic", summary: String = "") {
+fun BiodataPreviewScreen(navController: NavController, biodataId: String, templateId: String = "classic") {
     val context = LocalContext.current
     val firebaseAuth = FirebaseAuth.getInstance()
     val database = BioDataDatabase.getInstance(context)
     val viewModel = remember {
-        com.biodataai.app.ui.viewmodel.BiodataPreviewViewModel(context, biodataId, templateId, summary, firebaseAuth, database)
+        com.biodataai.app.ui.viewmodel.BiodataPreviewViewModel(context, biodataId, templateId, firebaseAuth, database)
     }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -1176,6 +1179,16 @@ fun BiodataPreviewScreen(navController: NavController, biodataId: String, templa
                     .padding(16.dp),
                 verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
             ) {
+                item {
+                    // Preview in either language; each renders that language's labels + summary.
+                    FormSingleChoice(
+                        label = stringResource(R.string.preview_language),
+                        options = listOf("EN" to "English", "HI" to "हिन्दी"),
+                        selected = uiState.language.name,
+                        onSelect = { viewModel.setLanguage(com.biodataai.app.db.entity.LanguagePref.valueOf(it)) }
+                    )
+                }
+
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth()
@@ -1228,6 +1241,17 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
 
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // "EN" | "HI" | "BOTH"; defaults to the biodata's own language once loaded.
+    var exportChoice by remember { mutableStateOf("") }
+    LaunchedEffect(uiState.defaultLanguage) {
+        if (exportChoice.isBlank()) exportChoice = uiState.defaultLanguage.name
+    }
+    val exportLanguages = when (exportChoice) {
+        "BOTH" -> listOf(LanguagePref.EN, LanguagePref.HI)
+        "HI" -> listOf(LanguagePref.HI)
+        else -> listOf(LanguagePref.EN)
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
@@ -1287,7 +1311,19 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                     }
                 }
 
-                if (uiState.isExportSuccessful && uiState.pdfFilePath != null) {
+                item {
+                    FormSingleChoice(
+                        label = stringResource(R.string.export_language),
+                        options = listOf("EN" to "English", "HI" to "हिन्दी", "BOTH" to "Both"),
+                        selected = exportChoice,
+                        onSelect = { exportChoice = it }
+                    )
+                    if (exportChoice == "BOTH") {
+                        Text(stringResource(R.string.export_both_credits_note), fontSize = 12.sp)
+                    }
+                }
+
+                if (uiState.isExportSuccessful && uiState.exportedFiles.isNotEmpty()) {
                     item {
                         Card(
                             modifier = Modifier
@@ -1296,7 +1332,10 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text("✓ PDF Exported", fontWeight = FontWeight.Bold, color = androidx.compose.material3.MaterialTheme.colorScheme.primary)
-                                Text(uiState.pdfFilePath!!, fontSize = 11.sp)
+                                uiState.exportedFiles.forEach { exported ->
+                                    val lang = if (exported.language == LanguagePref.HI) "हिन्दी" else "English"
+                                    Text("$lang: ${exported.path}", fontSize = 11.sp)
+                                }
                             }
                         }
                     }
@@ -1318,9 +1357,9 @@ fun PdfExportScreen(navController: NavController, biodataId: String, templateId:
                         }
 
                         Button(
-                            onClick = { viewModel.exportPdf() },
+                            onClick = { viewModel.exportPdf(exportLanguages) },
                             modifier = Modifier.weight(1f),
-                            enabled = !uiState.isLoading && !uiState.isExportSuccessful
+                            enabled = !uiState.isLoading && !uiState.isExportSuccessful && exportChoice.isNotBlank()
                         ) {
                             Text(stringResource(R.string.export_pdf))
                         }

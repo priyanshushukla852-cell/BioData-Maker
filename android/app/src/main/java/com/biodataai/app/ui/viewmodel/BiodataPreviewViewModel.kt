@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.biodataai.app.db.BioDataDatabase
+import com.biodataai.app.db.entity.LanguagePref
 import com.biodataai.app.template.BiodataDocument
 import com.biodataai.app.template.TemplateBlock
 import com.biodataai.app.template.TemplateLabels
@@ -21,6 +22,7 @@ data class BiodataPreviewUiState(
     val title: String = "",
     val blocks: List<TemplateBlock> = emptyList(),
     val templateId: String = "",
+    val language: LanguagePref = LanguagePref.EN,
     val summary: String = ""
 )
 
@@ -28,7 +30,6 @@ class BiodataPreviewViewModel(
     context: Context,
     private val biodataId: String,
     private val templateId: String,
-    private val summary: String,
     firebaseAuth: FirebaseAuth,
     private val database: BioDataDatabase
 ) : ViewModel() {
@@ -38,7 +39,17 @@ class BiodataPreviewViewModel(
     private val _uiState = MutableStateFlow(BiodataPreviewUiState())
     val uiState: StateFlow<BiodataPreviewUiState> = _uiState.asStateFlow()
 
+    // Set false once we've defaulted the preview to the biodata's own language.
+    private var languageInitialized = false
+
     init {
+        generatePreview()
+    }
+
+    /** Switch the previewed language (renders that language's labels + stored summary). */
+    fun setLanguage(language: LanguagePref) {
+        languageInitialized = true
+        _uiState.value = _uiState.value.copy(language = language)
         generatePreview()
     }
 
@@ -52,9 +63,16 @@ class BiodataPreviewViewModel(
                     return@launch
                 }
 
+                // Default to the biodata's own language on first load.
+                val language = if (languageInitialized) _uiState.value.language else biodata.language
+                val summary = when (language) {
+                    LanguagePref.HI -> biodata.summaryHi
+                    LanguagePref.EN -> biodata.summaryEn
+                } ?: ""
+
                 val formState = Gson().fromJson(biodata.formDataJson ?: "{}", FormState::class.java)
                     ?: FormState()
-                val labels = TemplateLabels.forLanguage(appContext, biodata.language)
+                val labels = TemplateLabels.forLanguage(appContext, language)
                 val document: BiodataDocument =
                     TemplateRenderer.buildDocument(templateId, formState, labels, summary)
 
@@ -63,6 +81,7 @@ class BiodataPreviewViewModel(
                     title = document.title,
                     blocks = document.blocks,
                     templateId = templateId,
+                    language = language,
                     summary = summary
                 )
             } catch (e: Exception) {

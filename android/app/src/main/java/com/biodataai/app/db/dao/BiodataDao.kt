@@ -43,6 +43,9 @@ interface BiodataDao {
     @Query("UPDATE biodatas SET deletedAt = :deletedAt WHERE id = :id")
     suspend fun softDeleteBiodata(id: String, deletedAt: java.time.Instant)
 
+    @Query("UPDATE biodatas SET summaryEn = :summaryEn, summaryHi = :summaryHi WHERE id = :id")
+    suspend fun updateSummaries(id: String, summaryEn: String?, summaryHi: String?)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPersonalDetails(details: PersonalDetailsEntity)
 
