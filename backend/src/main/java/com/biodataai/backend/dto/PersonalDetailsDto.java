@@ -13,5 +13,6 @@ public record PersonalDetailsDto(
         Integer heightCm,
         String complexion,
         String disability,
-        String maritalStatus) {
+        String maritalStatus,
+        String bloodGroup) {
 }

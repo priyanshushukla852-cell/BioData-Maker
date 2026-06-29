@@ -13,7 +13,8 @@ data class PersonalDetailsForm(
     val heightCm: String = "",
     val complexion: String = "",
     val maritalStatus: String = "", // NEVER_MARRIED, DIVORCED, WIDOWED
-    val disability: String = ""
+    val disability: String = "",
+    val bloodGroup: String = "" // e.g. O+, A-, AB+
 )
 
 /**

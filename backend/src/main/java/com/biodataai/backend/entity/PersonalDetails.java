@@ -62,4 +62,7 @@ public class PersonalDetails {
 
     @Column(name = "marital_status", length = 30)
     private String maritalStatus;
+
+    @Column(name = "blood_group", length = 5)
+    private String bloodGroup;
 }

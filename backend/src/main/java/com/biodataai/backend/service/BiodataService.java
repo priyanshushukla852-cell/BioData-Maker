@@ -199,6 +199,7 @@ public class BiodataService {
         entity.setComplexion(dto.complexion());
         entity.setDisability(dto.disability());
         entity.setMaritalStatus(dto.maritalStatus());
+        entity.setBloodGroup(dto.bloodGroup());
         personalDetailsRepository.save(entity);
     }
 
@@ -296,7 +297,7 @@ public class BiodataService {
                 .findByBiodataId(biodata.getId())
                 .map(p -> new PersonalDetailsDto(
                         p.getFullName(), p.getDob(), p.getGender(), p.getReligion(), p.getCaste(), p.getGotra(),
-                        p.getHeightCm(), p.getComplexion(), p.getDisability(), p.getMaritalStatus()))
+                        p.getHeightCm(), p.getComplexion(), p.getDisability(), p.getMaritalStatus(), p.getBloodGroup()))
                 .orElse(null);
 
         FamilyDetailsDto familyDetails = familyDetailsRepository

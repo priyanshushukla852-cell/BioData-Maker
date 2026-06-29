@@ -23,7 +23,8 @@ data class PersonalDetailsDto(
     val heightCm: Int?,
     val complexion: String?,
     val disability: String?,
-    val maritalStatus: String?
+    val maritalStatus: String?,
+    val bloodGroup: String?
 )
 
 data class FamilyDetailsDto(
@@ -77,6 +78,11 @@ data class ContactInfoDto(
 
 private fun String.orNull(): String? = trim().ifBlank { null }
 
+// The backend parses birthTime as a LocalTime; sending a malformed value would fail Jackson
+// binding for the whole request, silently blocking the entire sync. Only forward valid HH:mm.
+private val HHMM = Regex("^([01]\\d|2[0-3]):[0-5]\\d$")
+private fun String.asHhmmOrNull(): String? = orNull()?.takeIf { HHMM.matches(it) }
+
 /**
  * Maps the local [FormState] into the backend's structured update request. Every form field now
  * has a dedicated backend column (added in migration V5), so nothing is dropped. The only
@@ -101,7 +107,8 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         heightCm = p.heightCm.orNull()?.toIntOrNull(),
         complexion = p.complexion.orNull(),
         disability = p.disability.orNull(),
-        maritalStatus = p.maritalStatus.orNull()
+        maritalStatus = p.maritalStatus.orNull(),
+        bloodGroup = p.bloodGroup.orNull()
     )
 
     val family = FamilyDetailsDto(
@@ -149,7 +156,7 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
             "NO" -> "NO"
             else -> null // UNKNOWN / blank -> leave unset (backend has no UNKNOWN)
         },
-        birthTime = a.birthTime.orNull(),
+        birthTime = a.birthTime.asHhmmOrNull(),
         birthPlace = a.birthPlace.orNull(),
         sunSign = a.sunSign.orNull()
     )
@@ -184,7 +191,7 @@ private fun mapHabitFrequency(value: String): String? = when (value.trim().upper
 
 // Each section is sent only if at least one field is non-null, so we don't create empty rows.
 private fun PersonalDetailsDto.takeIfAny() = takeIf {
-    listOfNotNull(fullName, dob, gender, religion, caste, gotra, heightCm, complexion, disability, maritalStatus).isNotEmpty()
+    listOfNotNull(fullName, dob, gender, religion, caste, gotra, heightCm, complexion, disability, maritalStatus, bloodGroup).isNotEmpty()
 }
 private fun FamilyDetailsDto.takeIfAny() = takeIf {
     listOfNotNull(fatherName, fatherOccupation, motherName, motherOccupation, siblings, familyType, familyValues, familyStatus).isNotEmpty()

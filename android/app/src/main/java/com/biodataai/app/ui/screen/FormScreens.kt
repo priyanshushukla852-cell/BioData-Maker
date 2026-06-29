@@ -346,6 +346,7 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
     var gender by remember { mutableStateOf(uiState.formState.step1.gender) }
     var religion by remember { mutableStateOf(uiState.formState.step1.religion) }
     var heightCm by remember { mutableStateOf(uiState.formState.step1.heightCm) }
+    var bloodGroup by remember { mutableStateOf(uiState.formState.step1.bloodGroup) }
     var disability by remember { mutableStateOf(uiState.formState.step1.disability) }
 
     LazyColumn(
@@ -442,6 +443,17 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
         }
         item {
             FormTextField(
+                value = bloodGroup,
+                onValueChange = {
+                    bloodGroup = it
+                    viewModel.updateStep1(uiState.formState.step1.copy(bloodGroup = it))
+                },
+                label = "Blood Group (e.g. O+)",
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item {
+            FormTextField(
                 value = disability,
                 onValueChange = {
                     disability = it
@@ -515,6 +527,7 @@ private fun FormStep4Lifestyle(viewModel: FormStepViewModel, uiState: com.biodat
 @Composable
 private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var birthPlace by remember { mutableStateOf(uiState.formState.step5.birthPlace) }
+    var birthTime by remember { mutableStateOf(uiState.formState.step5.birthTime) }
     var isManglik by remember { mutableStateOf(uiState.formState.step5.isManglik) }
     var nakshatra by remember { mutableStateOf(uiState.formState.step5.nakshatra) }
 
@@ -526,6 +539,7 @@ private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodat
     ) {
         item { Text("Astrology (Optional)", fontWeight = FontWeight.Bold, fontSize = 16.sp) }
         item { FormTextField(value = birthPlace, onValueChange = { birthPlace = it; viewModel.updateStep5(uiState.formState.step5.copy(birthPlace = it)) }, label = "Birth Place", modifier = Modifier.fillMaxWidth()) }
+        item { FormTextField(value = birthTime, onValueChange = { birthTime = it; viewModel.updateStep5(uiState.formState.step5.copy(birthTime = it)) }, label = "Birth Time (HH:MM, e.g. 14:30)", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = nakshatra, onValueChange = { nakshatra = it; viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it)) }, label = "Nakshatra (Optional)", modifier = Modifier.fillMaxWidth()) }
         item { FormTextField(value = isManglik, onValueChange = { isManglik = it; viewModel.updateStep5(uiState.formState.step5.copy(isManglik = it)) }, label = "Manglik Status (Optional)", modifier = Modifier.fillMaxWidth()) }
     }
