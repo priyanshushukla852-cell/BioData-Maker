@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -333,6 +336,34 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
     }
 }
 
+/**
+ * Single-choice chip row for categorical fields — faster (one tap) and less error-prone than
+ * typing, which matters on this long form. [options] is value-to-display; the stored value is the
+ * first element (must match the backend's expected token), the second is what the user sees.
+ */
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Composable
+private fun FormSingleChoice(
+    label: String,
+    options: List<Pair<String, String>>,
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    Column {
+        Text(label, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(4.dp))
+        FlowRow(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+            options.forEach { (value, display) ->
+                FilterChip(
+                    selected = selected == value,
+                    onClick = { onSelect(value) },
+                    label = { Text(display) }
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.biodataai.app.ui.viewmodel.FormStepUiState) {
     var fullName by remember { mutableStateOf(uiState.formState.step1.fullName) }
@@ -399,27 +430,12 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
             )
         }
         item {
-            Text("Gender *", fontWeight = FontWeight.Bold)
-            Row {
-                listOf("MALE", "FEMALE", "OTHER").forEach { g ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            gender = g
-                            viewModel.updateStep1(uiState.formState.step1.copy(gender = g))
-                        }
-                    ) {
-                        RadioButton(
-                            selected = gender == g,
-                            onClick = {
-                                gender = g
-                                viewModel.updateStep1(uiState.formState.step1.copy(gender = g))
-                            }
-                        )
-                        Text(g.replace("_", " "))
-                    }
-                }
-            }
+            FormSingleChoice(
+                label = "Gender *",
+                options = listOf("MALE" to "Male", "FEMALE" to "Female", "OTHER" to "Other"),
+                selected = gender,
+                onSelect = { gender = it; viewModel.updateStep1(uiState.formState.step1.copy(gender = it)) }
+            )
         }
         item {
             FormTextField(
@@ -445,14 +461,11 @@ private fun FormStep1PersonalDetails(viewModel: FormStepViewModel, uiState: com.
             )
         }
         item {
-            FormTextField(
-                value = bloodGroup,
-                onValueChange = {
-                    bloodGroup = it
-                    viewModel.updateStep1(uiState.formState.step1.copy(bloodGroup = it))
-                },
-                label = "Blood Group (e.g. O+)",
-                modifier = Modifier.fillMaxWidth()
+            FormSingleChoice(
+                label = "Blood Group",
+                options = listOf("A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-").map { it to it },
+                selected = bloodGroup,
+                onSelect = { bloodGroup = it; viewModel.updateStep1(uiState.formState.step1.copy(bloodGroup = it)) }
             )
         }
         item {
@@ -522,7 +535,14 @@ private fun FormStep4Lifestyle(viewModel: FormStepViewModel, uiState: com.biodat
             .padding(16.dp),
         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
     ) {
-        item { FormTextField(value = diet, onValueChange = { diet = it; viewModel.updateStep4(uiState.formState.step4.copy(diet = it)) }, label = "Diet (VEG/NON_VEG)", modifier = Modifier.fillMaxWidth()) }
+        item {
+            FormSingleChoice(
+                label = "Diet",
+                options = listOf("VEG" to "Veg", "NON_VEG" to "Non-Veg"),
+                selected = diet,
+                onSelect = { diet = it; viewModel.updateStep4(uiState.formState.step4.copy(diet = it)) }
+            )
+        }
         item { FormTextField(value = hobbies, onValueChange = { hobbies = it; viewModel.updateStep4(uiState.formState.step4.copy(hobbies = it)) }, label = "Hobbies & Interests", modifier = Modifier.fillMaxWidth()) }
     }
 }
@@ -552,7 +572,14 @@ private fun FormStep5Astrology(viewModel: FormStepViewModel, uiState: com.biodat
             }
         }
         item { FormTextField(value = nakshatra, onValueChange = { nakshatra = it; viewModel.updateStep5(uiState.formState.step5.copy(nakshatra = it)) }, label = "Nakshatra (Optional)", modifier = Modifier.fillMaxWidth()) }
-        item { FormTextField(value = isManglik, onValueChange = { isManglik = it; viewModel.updateStep5(uiState.formState.step5.copy(isManglik = it)) }, label = "Manglik Status (Optional)", modifier = Modifier.fillMaxWidth()) }
+        item {
+            FormSingleChoice(
+                label = "Manglik Status (Optional)",
+                options = listOf("YES" to "Yes", "NO" to "No", "PARTIAL" to "Partial"),
+                selected = isManglik,
+                onSelect = { isManglik = it; viewModel.updateStep5(uiState.formState.step5.copy(isManglik = it)) }
+            )
+        }
     }
 
     if (showTimePicker) {

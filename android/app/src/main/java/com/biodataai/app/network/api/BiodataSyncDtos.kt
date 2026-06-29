@@ -154,6 +154,7 @@ fun FormState.toUpdateRequest(title: String? = null): UpdateBiodataRequest {
         manglik = when (a.isManglik.trim().uppercase()) {
             "YES" -> "YES"
             "NO" -> "NO"
+            "PARTIAL" -> "PARTIAL"
             else -> null // UNKNOWN / blank -> leave unset (backend has no UNKNOWN)
         },
         birthTime = a.birthTime.asHhmmOrNull(),
