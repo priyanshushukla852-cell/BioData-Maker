@@ -278,18 +278,21 @@ fun FormStepScreen(navController: NavController, biodataId: String, step: Int) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            when (step) {
-                1 -> FormStep1PersonalDetails(viewModel, uiState)
-                2 -> FormStep2FamilyDetails(viewModel, uiState)
-                3 -> FormStep3EducationCareer(viewModel, uiState)
-                4 -> FormStep4Lifestyle(viewModel, uiState)
-                5 -> FormStep5Astrology(viewModel, uiState)
-                6 -> FormStep6ContactInfo(viewModel, uiState)
-                7 -> FormStep7Photos(viewModel, uiState)
-                else -> Text("Unknown step")
+            // Weighted so the scrollable step content takes exactly the space between the progress
+            // bar and the nav row, scrolling internally. Without this a tall step pushed the
+            // Back/Next row off the bottom of the screen.
+            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                when (step) {
+                    1 -> FormStep1PersonalDetails(viewModel, uiState)
+                    2 -> FormStep2FamilyDetails(viewModel, uiState)
+                    3 -> FormStep3EducationCareer(viewModel, uiState)
+                    4 -> FormStep4Lifestyle(viewModel, uiState)
+                    5 -> FormStep5Astrology(viewModel, uiState)
+                    6 -> FormStep6ContactInfo(viewModel, uiState)
+                    7 -> FormStep7Photos(viewModel, uiState)
+                    else -> Text("Unknown step")
+                }
             }
-
-            Spacer(Modifier.weight(1f))
 
             // Step 6 (contact) requires a validly-formatted phone and email before advancing. Step
             // composables write to formState on each keystroke, so this stays in sync. Other steps
