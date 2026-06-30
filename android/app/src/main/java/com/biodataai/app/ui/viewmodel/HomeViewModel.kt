@@ -77,6 +77,14 @@ class HomeViewModel(
         }
     }
 
+    /** Soft-deletes a biodata (sets deletedAt). The Room flow excludes deleted rows, so the list
+     *  refreshes itself; the backend delete syncs opportunistically. */
+    fun deleteBiodata(id: String) {
+        viewModelScope.launch {
+            biodataRepository.deleteBiodata(id)
+        }
+    }
+
     fun signOut() {
         authRepository.signOut()
     }
